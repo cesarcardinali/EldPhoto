@@ -12,6 +12,7 @@
     <uses-feature android:name="android.hardware.camera" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.INTERNET" />    
+	<uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -31,6 +32,27 @@
             android:name="org.eldorado.eldphoto.MainActivity"
             android:label="@string/title_activity_main" >
         </activity>
+        
+        <activity
+            android:name="org.eldorado.eldphoto.CamActivity"
+            android:label="@string/title_activity_cam"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" >
+            
+            <intent-filter>
+                <action android:name="@string/ACTION_CAM" />
+            </intent-filter>
+            
+        </activity>
+        <activity
+            android:name="org.eldorado.eldphoto.DealWithPictureActivity"
+            android:label="@string/title_activity_deal_with_picture" >
+            
+            <intent-filter>
+                <action android:name="@string/ACTION_DEAL_WITH_PICTURE"/>
+            </intent-filter>
+        </activity>
+        
     </application>
 
 </manifest>
