@@ -37,18 +37,15 @@ public final class R {
         public static final int Button1=0x7f090005;
         public static final int Button2=0x7f090006;
         public static final int FrameLayout1=0x7f090003;
-        public static final int action_settings=0x7f090017;
+        public static final int action_settings=0x7f090014;
         public static final int btnCapturePicture=0x7f090012;
+        public static final int btnUploadPicture=0x7f090013;
         public static final int camera_preview=0x7f090000;
-        public static final int f1=0x7f090014;
-        public static final int f2=0x7f090015;
-        public static final int f3=0x7f090016;
         public static final int filterLayout=0x7f090007;
         public static final int imageFilter1=0x7f09000a;
         public static final int imageFilter2=0x7f09000c;
         public static final int imageFilter3=0x7f09000e;
         public static final int imageView1=0x7f090004;
-        public static final int imgPreview=0x7f090013;
         public static final int listView=0x7f090002;
         public static final int login=0x7f090011;
         public static final int pass=0x7f090010;
@@ -80,6 +77,7 @@ public final class R {
         public static final int hello_world=0x7f060006;
         public static final int pass=0x7f060004;
         public static final int sendButton=0x7f06000e;
+        public static final int take_picture=0x7f060014;
         public static final int text_choosing_filters=0x7f06000b;
         public static final int text_filter1=0x7f060010;
         public static final int text_filter2=0x7f060011;
@@ -88,6 +86,7 @@ public final class R {
         public static final int title_activity_deal_with_picture=0x7f060008;
         public static final int title_activity_main=0x7f060005;
         public static final int undoFilterButton=0x7f06000f;
+        public static final int upload=0x7f060015;
         public static final int user=0x7f060003;
         public static final int welcome=0x7f060002;
     }

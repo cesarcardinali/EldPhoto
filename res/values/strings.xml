@@ -22,4 +22,7 @@
     <string name="text_filter2">filter 2</string>
     <string name="text_filter3">filter 3</string>
     <string name="content_filter3">Filter 3 sample</string>
+    
+    <string name="take_picture">Take a Picture</string>
+    <string name="upload">Upload</string>
 </resources>
