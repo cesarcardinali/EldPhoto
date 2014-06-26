@@ -1,9 +1,13 @@
 package org.eldorado.eldphoto;
 
 import org.eldorado.eldphoto.R;
+
 import java.util.ArrayList;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -12,26 +16,63 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Toast;
 import android.widget.EditText;
 
 public class LoginActivity extends Activity {
+	private static final String SPF_NAME = "eldlogin"; //  <--- Add this
+	private static final String USERNAME = "username";  //  <--- To save username
+	private static final String PASSWORD = "password";  //  <--- To save password
+	private static final String KEY = "security@eldorado";  //  <--- To encrypt the password
+	
 	EditText un,pw;
 	Button login;
 	Context context;
+	CheckBox chkRememberMe;
+	SimpleAES aes;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-
+		
 		context = this.getApplicationContext();
 		un=(EditText)findViewById(R.id.user);
 		pw=(EditText)findViewById(R.id.pass);		
 		login = (Button) findViewById(R.id.login);
+		chkRememberMe = (CheckBox) findViewById(R.id.savepass);
+		
 
-
-
+		SharedPreferences loginPreferences = getSharedPreferences(SPF_NAME,
+	            Context.MODE_PRIVATE);		
+		
+		try {
+			aes= new SimpleAES(KEY);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			Toast.makeText(getApplicationContext(),"aes "+e1.toString(),Toast.LENGTH_LONG).show();;
+		}
+		
+		try {
+			un.setText(aes.decrypt(loginPreferences.getString(USERNAME,"")));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			Toast.makeText(getApplicationContext(),"un" + e.toString(),
+					Toast.LENGTH_LONG).show();
+		}
+		try {
+			pw.setText(aes.decrypt(loginPreferences.getString(PASSWORD,"")));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			Toast.makeText(getApplicationContext(),e.toString(),
+					Toast.LENGTH_LONG).show();
+		}
+		//un.setText(loginPreferences.getString(USERNAME,""));
+		
+		
+		
 		login.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
@@ -39,9 +80,13 @@ public class LoginActivity extends Activity {
 				//				Intent nextIntent = new Intent(LoginActivity.this, MainActivity.class);
 				//				//nextIntent.putExtra("nome", "user");
 				//				LoginActivity.this.startActivity(nextIntent);
+				
 
 				String uname = un.getText().toString();
 				String pwd = pw.getText().toString();
+				
+			
+				
 
 				validateUserTask task = new validateUserTask();
 				task.execute(new String[]{uname, pwd});				
@@ -56,7 +101,7 @@ public class LoginActivity extends Activity {
 		return true;
 	}
 
-
+	
 	private class validateUserTask extends AsyncTask<String, Void, String> {
 		@Override
 		protected String doInBackground(String... params) {
@@ -75,17 +120,40 @@ public class LoginActivity extends Activity {
 				Toast.makeText(getApplicationContext(),e.toString(),
 						Toast.LENGTH_SHORT).show();
 			}
+
 			return res;
 		}//close doInBackground
 
 		@Override
 		protected void onPostExecute(String result) {
 			if(result.equals("1")){
-				//navigate to Main Menu
+				String strUserName="false";
+				try {
+					strUserName = aes.encrypt(un.getText().toString());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				String strPassword="false";
+				try {
+					strPassword = aes.encrypt(pw.getText().toString());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				if (chkRememberMe.isChecked()){
+					SharedPreferences loginPreferences = getSharedPreferences(SPF_NAME, Context.MODE_PRIVATE);
+					loginPreferences.edit().putString(USERNAME, strUserName).putString(PASSWORD, strPassword).commit();
+					Toast.makeText(getApplicationContext(), "Password Saved",Toast.LENGTH_SHORT).show();
+				}
+					//navigate to Main Menu					
 				Intent intent = new Intent(LoginActivity.this, MainActivity.class);
 				startActivity(intent);
 			}
 			else{
+                SharedPreferences loginPreferences = getSharedPreferences(SPF_NAME, Context.MODE_PRIVATE);
+                loginPreferences.edit().clear().commit();				
 				Toast.makeText(getApplicationContext(), "Sorry!! Incorrect Username or Password",
 						Toast.LENGTH_SHORT).show();
 			}   
