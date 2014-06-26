@@ -57,7 +57,10 @@ public class LoginActivity extends Activity {
 	}
 
 
-	private class validateUserTask extends AsyncTask<String, Void, String> {
+	private class validateUserTask extends AsyncTask<String, Integer, String> {
+		
+		private String message;
+		
 		@Override
 		protected String doInBackground(String... params) {
 			// TODO Auto-generated method stub
@@ -72,24 +75,36 @@ public class LoginActivity extends Activity {
 				res= res.replaceAll("\\s+","");
 
 			} catch (Exception e) {
-				Toast.makeText(getApplicationContext(),e.toString(),
-						Toast.LENGTH_SHORT).show();
+				//sets the error message
+				message = e.toString();
+				//shows the message
+				publishProgress(0);
 			}
 			return res;
 		}//close doInBackground
 
 		@Override
 		protected void onPostExecute(String result) {
-			if(result.equals("1")){
+			
+			if(result != null && result.equals("1")){
 				//navigate to Main Menu
 				Intent intent = new Intent(LoginActivity.this, MainActivity.class);
 				startActivity(intent);
 			}
 			else{
-				Toast.makeText(getApplicationContext(), "Sorry!! Incorrect Username or Password",
-						Toast.LENGTH_SHORT).show();
+				//sets the error message
+				message = "Sorry!! Incorrect Username or Password";
+				//shows it
+				publishProgress(0);
 			}   
-		}//close onPostExecute
+		}
+		//close onPostExecute
+		
+	
+		protected void onProgressUpdate(Integer... progress) {
+			Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+		}
+		
 	}// close validateUserTask 		
 
 }
