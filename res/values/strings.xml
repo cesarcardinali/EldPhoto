@@ -8,6 +8,7 @@
     <string name="pass">Password</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="savepass">Save Password</string>
     
     <string name="title_activity_cam">Click to take a picture</string>
     <string name="title_activity_deal_with_picture">What now?</string>
@@ -23,3 +24,4 @@
     <string name="text_filter3">filter 3</string>
     <string name="content_filter3">Filter 3 sample</string>
 </resources>
+
