@@ -26,12 +26,37 @@ public final class R {
         public static final int logo=0x7f020002;
     }
     public static final class id {
+<<<<<<< HEAD
         public static final int action_settings=0x7f080005;
         public static final int btnCapturePicture=0x7f080003;
         public static final int btnUploadPicture=0x7f080004;
         public static final int login=0x7f080002;
         public static final int pass=0x7f080001;
         public static final int user=0x7f080000;
+=======
+        public static final int Button1=0x7f090005;
+        public static final int Button2=0x7f090006;
+        public static final int FrameLayout1=0x7f090003;
+        public static final int action_settings=0x7f090015;
+        public static final int btnCapturePicture=0x7f090013;
+        public static final int btnUploadPicture=0x7f090014;
+        public static final int camera_preview=0x7f090000;
+        public static final int filterLayout=0x7f090007;
+        public static final int imageFilter1=0x7f09000a;
+        public static final int imageFilter2=0x7f09000c;
+        public static final int imageFilter3=0x7f09000e;
+        public static final int imageView1=0x7f090004;
+        public static final int listView=0x7f090002;
+        public static final int login=0x7f090012;
+        public static final int pass=0x7f090010;
+        public static final int savepass=0x7f090011;
+        public static final int textView2=0x7f090009;
+        public static final int textView3=0x7f09000b;
+        public static final int textView4=0x7f09000d;
+        public static final int text_choosing_filters=0x7f090001;
+        public static final int user=0x7f09000f;
+        public static final int viewFlipper1=0x7f090008;
+>>>>>>> eldphoto/pass_encrypt
     }
     public static final class layout {
         public static final int activity_login=0x7f030000;
@@ -42,6 +67,7 @@ public final class R {
         public static final int main=0x7f070001;
     }
     public static final class string {
+<<<<<<< HEAD
         public static final int ACTION_CAM=0x7f050009;
         public static final int ACTION_DEAL_WITH_PICTURE=0x7f05000a;
         public static final int action_settings=0x7f050001;
@@ -64,6 +90,31 @@ public final class R {
         public static final int upload=0x7f050015;
         public static final int user=0x7f050003;
         public static final int welcome=0x7f050002;
+=======
+        public static final int ACTION_CAM=0x7f06000a;
+        public static final int ACTION_DEAL_WITH_PICTURE=0x7f06000b;
+        public static final int action_settings=0x7f060001;
+        public static final int app_name=0x7f060000;
+        public static final int cancelButton=0x7f06000e;
+        public static final int content_filter3=0x7f060014;
+        public static final int deal_with_picture_text=0x7f06000d;
+        public static final int hello_world=0x7f060006;
+        public static final int pass=0x7f060004;
+        public static final int savepass=0x7f060007;
+        public static final int sendButton=0x7f06000f;
+        public static final int take_picture=0x7f060015;
+        public static final int text_choosing_filters=0x7f06000c;
+        public static final int text_filter1=0x7f060011;
+        public static final int text_filter2=0x7f060012;
+        public static final int text_filter3=0x7f060013;
+        public static final int title_activity_cam=0x7f060008;
+        public static final int title_activity_deal_with_picture=0x7f060009;
+        public static final int title_activity_main=0x7f060005;
+        public static final int undoFilterButton=0x7f060010;
+        public static final int upload=0x7f060016;
+        public static final int user=0x7f060003;
+        public static final int welcome=0x7f060002;
+>>>>>>> eldphoto/pass_encrypt
     }
     public static final class style {
         /** 
