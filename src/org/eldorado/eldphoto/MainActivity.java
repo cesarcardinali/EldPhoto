@@ -1,7 +1,5 @@
 package org.eldorado.eldphoto;
 
-import org.eldorado.eldphoto.R;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,120 +8,42 @@ import java.util.Locale;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
 	// Activity request codes
-	private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
 	public static final int MEDIA_TYPE_IMAGE = 1;
 
 	// directory name to store captured images and videos
 	private static final String IMAGE_DIRECTORY_NAME = "Hello Camera";
 
 	private Uri fileUri; // file url to store image/video
-
-	private ImageView imgPreview;
+	
+	private Button btnUploadPicture;
 	private Button btnCapturePicture;
-	private TextView f1, f2, f3;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		imgPreview = (ImageView) findViewById(R.id.imgPreview);
-		btnCapturePicture = (Button) findViewById(R.id.btnCapturePicture);
-		f1 = (TextView) findViewById(R.id.f1);
-		f2 = (TextView) findViewById(R.id.f2);
-		f3 = (TextView) findViewById(R.id.f3);
-
 		/**
 		 * Capture image button click event
 		 */
+		btnCapturePicture = (Button) findViewById(R.id.btnCapturePicture);
 		btnCapturePicture.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// capture picture
 				captureImage();
-			}
-		});
-
-		f1.setOnClickListener(new TextView.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (f1.getTextSize() == 45.0) {
-					f1.setBackgroundColor(0xFF000000);
-					f1.setTextColor(0xFFFFFFFF);
-					f1.setTextSize((float) 32.0);
-					f2.setBackgroundColor(0xFFFFFFFF);
-					f2.setTextColor(0xFF000000);
-					f2.setTextSize((float) 30.0);
-					f3.setBackgroundColor(0xFFFFFFFF);
-					f3.setTextColor(0xFF000000);
-					f3.setTextSize((float) 30.0);
-				} else {
-					f1.setBackgroundColor(0xFFFFFFFF);
-					f1.setTextColor(0xFF000000);
-					f1.setTextSize((float) 30.0);
-				}
-			}
-		});
-
-		f2.setOnClickListener(new TextView.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (f2.getTextSize() == 45.0) {
-					f2.setBackgroundColor(0xFF000000);
-					f2.setTextColor(0xFFFFFFFF);
-					f2.setTextSize((float) 32.0);
-					f3.setBackgroundColor(0xFFFFFFFF);
-					f3.setTextColor(0xFF000000);
-					f3.setTextSize((float) 30.0);
-					f1.setBackgroundColor(0xFFFFFFFF);
-					f1.setTextColor(0xFF000000);
-					f1.setTextSize((float) 30.0);
-				} else {
-					f2.setBackgroundColor(0xFFFFFFFF);
-					f2.setTextColor(0xFF000000);
-					f2.setTextSize((float) 30.0);
-				}
-			}
-		});
-
-		f3.setOnClickListener(new TextView.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (f3.getTextSize() == 45.0) {
-					f3.setBackgroundColor(0xFF000000);
-					f3.setTextColor(0xFFFFFFFF);
-					f3.setTextSize((float) 32.0);
-					f2.setBackgroundColor(0xFFFFFFFF);
-					f2.setTextColor(0xFF000000);
-					f2.setTextSize((float) 30.0);
-					f1.setBackgroundColor(0xFFFFFFFF);
-					f1.setTextColor(0xFF000000);
-					f1.setTextSize((float) 30.0);
-				} else {
-					f3.setBackgroundColor(0xFFFFFFFF);
-					f3.setTextColor(0xFF000000);
-					f3.setTextSize((float) 30.0);
-				}
 			}
 		});
 
@@ -135,6 +55,8 @@ public class MainActivity extends Activity {
 			// will close the app if the device does't have camera
 			finish();
 		}
+		
+		btnUploadPicture = (Button) findViewById(R.id.btnUploadPicture);
 	}
 
 	/**
@@ -152,17 +74,12 @@ public class MainActivity extends Activity {
 	}
 
 	/**
-	 * Capturing Camera Image will lauch camera app requrest image capture
+	 * Capturing Camera Image will start CamActivity, which will display the camera preview
 	 */
 	private void captureImage() {
-		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-		fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
-
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-
-		// start the image capture Intent
-		startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);
+		
+		Intent camActivityIntent = new Intent(this, CamActivity.class);
+    	startActivity(camActivityIntent);
 	}
 
 	/**
@@ -182,56 +99,8 @@ public class MainActivity extends Activity {
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 
-		// get the file url
+		// get the file url 
 		fileUri = savedInstanceState.getParcelable("file_uri");
-	}
-
-	/**
-	 * Receiving activity result method will be called after closing the camera
-	 * */
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// if the result is capturing Image
-		if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE) {
-			if (resultCode == RESULT_OK) {
-				// successfully captured the image
-				// display it in image view
-				previewCapturedImage();
-			} else if (resultCode == RESULT_CANCELED) {
-				// user cancelled Image capture
-				Toast.makeText(getApplicationContext(),
-						"User cancelled image capture", Toast.LENGTH_SHORT)
-						.show();
-			} else {
-				// failed to capture image
-				Toast.makeText(getApplicationContext(),
-						"Sorry! Failed to capture image", Toast.LENGTH_SHORT)
-						.show();
-			}
-		}
-	}
-
-	/**
-	 * Display image from a path to ImageView
-	 */
-	private void previewCapturedImage() {
-		try {
-			imgPreview.setVisibility(View.VISIBLE);
-
-			// bimatp factory
-			BitmapFactory.Options options = new BitmapFactory.Options();
-
-			// downsizing image as it throws OutOfMemory Exception for larger
-			// images
-			options.inSampleSize = 2;
-
-			final Bitmap bitmap = BitmapFactory.decodeFile(fileUri.getPath(),
-					options);
-
-			imgPreview.setImageBitmap(bitmap);
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
