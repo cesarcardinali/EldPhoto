@@ -139,7 +139,8 @@ public class LoginActivity extends Activity {
 					strPassword = aes.encrypt(pw.getText().toString());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Toast.makeText(getApplicationContext(), "savepass" + e.toString(),
+							Toast.LENGTH_SHORT).show();
 				}
 				
 				if (chkRememberMe.isChecked()){

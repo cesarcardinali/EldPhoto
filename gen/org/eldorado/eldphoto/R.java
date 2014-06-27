@@ -70,11 +70,15 @@ public final class R {
         public static final int main=0x7f080001;
     }
     public static final class string {
+        public static final int action_settings=0x7f050001;
+        public static final int app_name=0x7f050000;
+        public static final int hello_world=0x7f050006;
+        public static final int pass=0x7f050004;
         public static final int ACTION_CAM=0x7f060009;
         public static final int ACTION_DEAL_WITH_PICTURE=0x7f06000a;
         public static final int action_settings=0x7f060001;
         public static final int app_name=0x7f060000;
-        public static final int cancelButton=0x7f06000d;
+        public static final int savepass=0x7f050007;
         public static final int content_filter3=0x7f060013;
         public static final int deal_with_picture_text=0x7f06000c;
         public static final int hello_world=0x7f060006;
