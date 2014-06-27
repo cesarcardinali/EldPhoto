@@ -24,7 +24,7 @@ public class LoginActivity extends Activity {
 	private static final String SPF_NAME = "eldlogin"; //  <--- Add this
 	private static final String USERNAME = "username";  //  <--- To save username
 	private static final String PASSWORD = "password";  //  <--- To save password
-	private static final String KEY = "security@eldorado";  //  <--- To encrypt the password
+	private static final String KEY = "string!keyword!elds";  //  <--- To encrypt the password
 	
 	EditText un,pw;
 	Button login;
@@ -52,24 +52,24 @@ public class LoginActivity extends Activity {
 			aes= new SimpleAES(KEY);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
-			Toast.makeText(getApplicationContext(),"aes "+e1.toString(),Toast.LENGTH_LONG).show();;
+			Toast.makeText(getApplicationContext(),"Failed to generate AES "+e1.toString(),Toast.LENGTH_LONG).show();;
 		}
 		
 		try {
 			un.setText(aes.decrypt(loginPreferences.getString(USERNAME,"")));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			Toast.makeText(getApplicationContext(),"un" + e.toString(),
+			Toast.makeText(getApplicationContext(),"Failed to save username" + e.toString(),
 					Toast.LENGTH_LONG).show();
 		}
 		try {
 			pw.setText(aes.decrypt(loginPreferences.getString(PASSWORD,"")));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			Toast.makeText(getApplicationContext(),e.toString(),
+			Toast.makeText(getApplicationContext(),"Failed to save password" + e.toString(),
 					Toast.LENGTH_LONG).show();
 		}
-		//un.setText(loginPreferences.getString(USERNAME,""));
+
 		
 		
 		
@@ -133,14 +133,14 @@ public class LoginActivity extends Activity {
 		protected void onPostExecute(String result) {
 			
 			if(result != null && result.equals("1")){
-				String strUserName="false";
+				String strUserName="";
 				try {
 					strUserName = aes.encrypt(un.getText().toString());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				String strPassword="false";
+				String strPassword="";
 				try {
 					strPassword = aes.encrypt(pw.getText().toString());
 				} catch (Exception e) {
