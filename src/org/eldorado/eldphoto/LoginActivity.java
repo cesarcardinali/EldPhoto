@@ -71,7 +71,8 @@ public class LoginActivity extends Activity {
 			try {
 				String response = CustomHttpClient.executeHttpPost("http://www.decom.fee.unicamp.br/~rhiga/check.php", postParameters);
 				//String response = CustomHttpClient.executeHttpPost("http://drive.google.com", postParameters);
-				res=response.toString();
+				//res = "1";
+				//res=response.toString();
 				res= res.replaceAll("\\s+","");
 
 			} catch (Exception e) {

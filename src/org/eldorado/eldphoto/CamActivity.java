@@ -120,8 +120,10 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
                     else if (lastX == currentX){
                     	
                     	try{
-                			
-                			//CamOps.setCameraDisplayOrientation(this, 0, preview.getCam());
+                			//removes previous filter images
+                    		DealWithPictureActivity.removeFilterImages();
+                    		DealWithPictureActivity.removeCurrentImage();
+                    		//sets the orientation of the picture
                 			CamOps.setPictureOrientation(this, preview.getCamID(), preview.getCam());
                 			preview.getCam().takePicture(null, null, new PictureCallback() {
                 				
