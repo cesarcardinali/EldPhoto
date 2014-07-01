@@ -3,7 +3,6 @@ package org.eldorado.eldphoto;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -12,6 +11,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -49,6 +49,11 @@ public class DealWithPictureActivity extends Activity {
 		image = BitmapFactory.decodeByteArray(picture, 0, picture.length, options);
 		if(currentImage == null)
 			currentImage = image.copy(image.getConfig(), true);
+		else{
+			
+			Button undoButton = (Button) findViewById(R.id.undoButton);
+			undoButton.setVisibility(View.VISIBLE);
+		}
 		
 		ImageView imageView = (ImageView) findViewById(R.id.imageView1);
 		imageView.setAdjustViewBounds(true);
@@ -184,6 +189,9 @@ public class DealWithPictureActivity extends Activity {
 								Bitmap.createScaledBitmap(image, imageView.getWidth(), imageView.getHeight(), false));
 						
 						imageView.setImageBitmap(currentImage);
+						
+						Button undoButton = (Button) findViewById(R.id.undoButton);
+						undoButton.setVisibility(View.VISIBLE);
 					}
 				});
 			}
@@ -232,10 +240,23 @@ public class DealWithPictureActivity extends Activity {
 								Bitmap.createScaledBitmap(image, imageView.getWidth(), imageView.getHeight(), false));
 						
 						imageView.setImageBitmap(currentImage);
+						
+						Button undoButton = (Button) findViewById(R.id.undoButton);
+						undoButton.setVisibility(View.VISIBLE);
 					}
 				});
 			}
 		}
+	}
+	
+	public void undoFilter(View view){
+		
+		currentImage = image;
+		ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+		imageView.setImageBitmap(currentImage);
+		
+		Button undoButton = (Button) findViewById(R.id.undoButton);
+		undoButton.setVisibility(View.INVISIBLE);
 	}
 	
 	/** This method is to be written.

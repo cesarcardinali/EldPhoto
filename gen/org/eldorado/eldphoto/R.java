@@ -37,18 +37,19 @@ public final class R {
         public static final int Button1=0x7f090005;
         public static final int Button2=0x7f090006;
         public static final int FrameLayout1=0x7f090003;
-        public static final int action_settings=0x7f09000e;
-        public static final int btnCapturePicture=0x7f09000c;
-        public static final int btnUploadPicture=0x7f09000d;
+        public static final int action_settings=0x7f09000f;
+        public static final int btnCapturePicture=0x7f09000d;
+        public static final int btnUploadPicture=0x7f09000e;
         public static final int camera_preview=0x7f090000;
         public static final int filterLayout=0x7f090007;
         public static final int imageView1=0x7f090004;
         public static final int listView=0x7f090002;
-        public static final int login=0x7f09000b;
-        public static final int pass=0x7f09000a;
+        public static final int login=0x7f09000c;
+        public static final int pass=0x7f09000b;
         public static final int text_choosing_filters=0x7f090001;
-        public static final int user=0x7f090009;
-        public static final int viewFlipper1=0x7f090008;
+        public static final int undoButton=0x7f090008;
+        public static final int user=0x7f09000a;
+        public static final int viewFlipper1=0x7f090009;
     }
     public static final class layout {
         public static final int activity_cam=0x7f030000;
