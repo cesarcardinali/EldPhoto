@@ -1,5 +1,10 @@
 package org.eldorado.eldphoto;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -8,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,6 +42,13 @@ public class DealWithPictureActivity extends Activity {
 	private float lastX;
 	private static ArrayList<Bitmap> filterImages = new ArrayList();
 	private Context context = this;
+	private EffectsFactory effectsFactory;
+	
+	public DealWithPictureActivity() {
+		
+		super();
+		effectsFactory = new EffectsFactory();
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +78,7 @@ public class DealWithPictureActivity extends Activity {
 		viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper1);
 		viewFlipper.setBackgroundColor(Color.argb(90, 255, 255, 255));
 		
-		EffectsFactory.setContext(this);
+		effectsFactory.setContext(this);
 		
 		showFilters();
 	}
@@ -132,6 +145,17 @@ public class DealWithPictureActivity extends Activity {
 	public void showFilters(){
 		
 		//for each effects available, ...
+		try{
+			
+			EffectsFactory.getAvailableEffects();
+		}
+		catch(Exception ex){
+			
+			Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+			ex.printStackTrace();
+			return;
+		}
+		
 		if(filterImages.size() == 0){
 			
 			for(int id = 0; id < EffectsFactory.getNumberOfEffectsAvailable(); id++){
@@ -142,7 +166,7 @@ public class DealWithPictureActivity extends Activity {
 					layout.setGravity(Gravity.CENTER);
 
 					TextView textView = new TextView(this);
-					textView.setText(EffectsFactory.getEffect(id).getName());
+					textView.setText(effectsFactory.getEffect(id).getName());
 					textView.setGravity(Gravity.CENTER);
 
 					ImageView filterView = new ImageView(this);
@@ -163,7 +187,7 @@ public class DealWithPictureActivity extends Activity {
 						height = 200;
 					}
 
-					filterImages.add(EffectsFactory.getEffect(id).applyEffect(Bitmap.createScaledBitmap(image, width, height, false)));
+					filterImages.add(effectsFactory.getEffect(id).applyEffect(Bitmap.createScaledBitmap(image, width, height, false)));
 
 					filterView.setImageBitmap(filterImages.get(id));
 
@@ -184,12 +208,12 @@ public class DealWithPictureActivity extends Activity {
 								int id = 0;
 
 								for(int i = 0; i < EffectsFactory.getNumberOfEffectsAvailable(); i++)
-									if(str.compareTo(EffectsFactory.getEffect(i).getName()) == 0){
+									if(str.compareTo(effectsFactory.getEffect(i).getName()) == 0){
 										id = i;
 										break;
 									}
 
-								currentImage = EffectsFactory.getEffect(id).applyEffect(
+								currentImage = effectsFactory.getEffect(id).applyEffect(
 										Bitmap.createScaledBitmap(image, imageView.getWidth(), imageView.getHeight(), false));
 
 								imageView.setImageBitmap(currentImage);
@@ -219,7 +243,7 @@ public class DealWithPictureActivity extends Activity {
 					layout.setGravity(Gravity.CENTER);
 
 					TextView textView = new TextView(this);
-					textView.setText(EffectsFactory.getEffect(id).getName());
+					textView.setText(effectsFactory.getEffect(id).getName());
 					textView.setGravity(Gravity.CENTER);
 
 					ImageView filterView = new ImageView(this);
@@ -246,12 +270,12 @@ public class DealWithPictureActivity extends Activity {
 								int id = 0;
 
 								for(int i = 0; i < EffectsFactory.getNumberOfEffectsAvailable(); i++)
-									if(str.compareTo(EffectsFactory.getEffect(i).getName()) == 0){
+									if(str.compareTo(effectsFactory.getEffect(i).getName()) == 0){
 										id = i;
 										break;
 									}
 
-								currentImage = EffectsFactory.getEffect(id).applyEffect(
+								currentImage = effectsFactory.getEffect(id).applyEffect(
 										Bitmap.createScaledBitmap(image, imageView.getWidth(), imageView.getHeight(), false));
 
 								imageView.setImageBitmap(currentImage);
@@ -280,6 +304,11 @@ public class DealWithPictureActivity extends Activity {
 		
 		Button undoButton = (Button) findViewById(R.id.undoButton);
 		undoButton.setVisibility(View.INVISIBLE);
+	}
+	
+	public void cancelPicture(View view){
+		
+		this.finish();
 	}
 	
 	/** This method is to be written.
