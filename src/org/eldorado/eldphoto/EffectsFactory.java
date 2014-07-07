@@ -233,6 +233,7 @@ public class EffectsFactory {
 		//initializes the classes' names list, if it is null
 		if(classes == null)
 			classes = new ArrayList();
+		else return;
 
 		//if we have access to the external storage, ...
 		if(EffectsFactory.isExternalStorageReadable()){
