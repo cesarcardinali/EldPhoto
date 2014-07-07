@@ -72,7 +72,15 @@
                 android:inputType="textPassword"
                 android:textSize="14sp" />
         </LinearLayout>
-
+    
+    <CheckBox
+        android:id="@+id/savepass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/savepass"
+        android:scaleX="0.70"
+    	android:scaleY="0.70" />
+    
         <Button
             android:id="@+id/login"
             android:layout_width="50pt"
@@ -81,6 +89,8 @@
             android:text="Entrar"
             android:textSize="12sp" />
     </LinearLayout>
+
+    
     
     <TextView
         android:layout_width="fill_parent"
