@@ -3,6 +3,7 @@ package org.eldorado.eldphoto;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 /** This class is the activity that shows the options to deal with the taken picture.
@@ -33,6 +35,7 @@ public class DealWithPictureActivity extends Activity {
 	private ViewFlipper viewFlipper;
 	private float lastX;
 	private static ArrayList<Bitmap> filterImages = new ArrayList();
+	private Context context = this;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,8 @@ public class DealWithPictureActivity extends Activity {
 		
 		viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper1);
 		viewFlipper.setBackgroundColor(Color.argb(90, 255, 255, 255));
+		
+		EffectsFactory.setContext(this);
 		
 		showFilters();
 	}
@@ -126,125 +131,143 @@ public class DealWithPictureActivity extends Activity {
 	 */
 	public void showFilters(){
 		
-		int rgb[] = new int[3];
-		HistogramEqualizationEffect.HSLToRGB(0, 1.0f, 0.5f, rgb);
-		
 		//for each effects available, ...
 		if(filterImages.size() == 0){
 			
 			for(int id = 0; id < EffectsFactory.getNumberOfEffectsAvailable(); id++){
 
-				LinearLayout layout = new LinearLayout(this);
-				layout.setOrientation(LinearLayout.VERTICAL);
-				layout.setGravity(Gravity.CENTER);
+				try{
+					LinearLayout layout = new LinearLayout(this);
+					layout.setOrientation(LinearLayout.VERTICAL);
+					layout.setGravity(Gravity.CENTER);
 
-				TextView textView = new TextView(this);
-				textView.setText(EffectsFactory.getEffect(id).getName());
-				textView.setGravity(Gravity.CENTER);
+					TextView textView = new TextView(this);
+					textView.setText(EffectsFactory.getEffect(id).getName());
+					textView.setGravity(Gravity.CENTER);
 
-				ImageView filterView = new ImageView(this);
-				filterView.setAdjustViewBounds(true);
-				filterView.setMaxHeight(200);
-				filterView.setMaxWidth(200);
+					ImageView filterView = new ImageView(this);
+					filterView.setAdjustViewBounds(true);
+					filterView.setMaxHeight(200);
+					filterView.setMaxWidth(200);
 
-				int width = image.getWidth();
-				int height = image.getHeight();
+					int width = image.getWidth();
+					int height = image.getHeight();
 
-				if(width > height){
+					if(width > height){
 
-					height = Math.round(height * 200.0f/width);
-					width = 200;
-				}
-				else{
-					width = Math.round(width * 200.0f/height);
-					height = 200;
-				}
-
-				filterImages.add(EffectsFactory.getEffect(id).applyEffect(Bitmap.createScaledBitmap(image, width, height, false)));
-				
-				filterView.setImageBitmap(filterImages.get(id));
-
-				layout.addView(textView);
-				layout.addView(filterView);
-				viewFlipper.addView(layout);
-				
-				layout.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View view) {
-
-						ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-						LinearLayout layout = (LinearLayout) view;
-						TextView text = (TextView) layout.getChildAt(0);
-						String str = (String) text.getText();
-						int id = 0;
-						
-						for(int i = 0; i < EffectsFactory.getNumberOfEffectsAvailable(); i++)
-							if(str.compareTo(EffectsFactory.getEffect(i).getName()) == 0){
-								id = i;
-								break;
-							}
-						
-						currentImage = EffectsFactory.getEffect(id).applyEffect(
-								Bitmap.createScaledBitmap(image, imageView.getWidth(), imageView.getHeight(), false));
-						
-						imageView.setImageBitmap(currentImage);
-						
-						Button undoButton = (Button) findViewById(R.id.undoButton);
-						undoButton.setVisibility(View.VISIBLE);
+						height = Math.round(height * 200.0f/width);
+						width = 200;
 					}
-				});
+					else{
+						width = Math.round(width * 200.0f/height);
+						height = 200;
+					}
+
+					filterImages.add(EffectsFactory.getEffect(id).applyEffect(Bitmap.createScaledBitmap(image, width, height, false)));
+
+					filterView.setImageBitmap(filterImages.get(id));
+
+					layout.addView(textView);
+					layout.addView(filterView);
+					viewFlipper.addView(layout);
+
+					layout.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View view) {
+
+							try{
+								ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+								LinearLayout layout = (LinearLayout) view;
+								TextView text = (TextView) layout.getChildAt(0);
+								String str = (String) text.getText();
+								int id = 0;
+
+								for(int i = 0; i < EffectsFactory.getNumberOfEffectsAvailable(); i++)
+									if(str.compareTo(EffectsFactory.getEffect(i).getName()) == 0){
+										id = i;
+										break;
+									}
+
+								currentImage = EffectsFactory.getEffect(id).applyEffect(
+										Bitmap.createScaledBitmap(image, imageView.getWidth(), imageView.getHeight(), false));
+
+								imageView.setImageBitmap(currentImage);
+
+								Button undoButton = (Button) findViewById(R.id.undoButton);
+								undoButton.setVisibility(View.VISIBLE);
+							}
+							catch(Exception ex){
+
+								Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
+							}
+						}
+					});
+				}
+				catch(Exception ex){
+					Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+				}
 			}
 		}
 		else{
 			
 			for(int id = 0; id < EffectsFactory.getNumberOfEffectsAvailable(); id++){
 
-				LinearLayout layout = new LinearLayout(this);
-				layout.setOrientation(LinearLayout.VERTICAL);
-				layout.setGravity(Gravity.CENTER);
+				try{
+					LinearLayout layout = new LinearLayout(this);
+					layout.setOrientation(LinearLayout.VERTICAL);
+					layout.setGravity(Gravity.CENTER);
 
-				TextView textView = new TextView(this);
-				textView.setText(EffectsFactory.getEffect(id).getName());
-				textView.setGravity(Gravity.CENTER);
+					TextView textView = new TextView(this);
+					textView.setText(EffectsFactory.getEffect(id).getName());
+					textView.setGravity(Gravity.CENTER);
 
-				ImageView filterView = new ImageView(this);
-				filterView.setAdjustViewBounds(true);
-				filterView.setMaxHeight(200);
-				filterView.setMaxWidth(200);
+					ImageView filterView = new ImageView(this);
+					filterView.setAdjustViewBounds(true);
+					filterView.setMaxHeight(200);
+					filterView.setMaxWidth(200);
 
-				filterView.setImageBitmap(filterImages.get(id));
+					filterView.setImageBitmap(filterImages.get(id));
 
-				layout.addView(textView);
-				layout.addView(filterView);
-				viewFlipper.addView(layout);
-				
-				layout.setOnClickListener(new OnClickListener() {
+					layout.addView(textView);
+					layout.addView(filterView);
+					viewFlipper.addView(layout);
 
-					@Override
-					public void onClick(View view) {
+					layout.setOnClickListener(new OnClickListener() {
 
-						ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-						LinearLayout layout = (LinearLayout) view;
-						TextView text = (TextView) layout.getChildAt(0);
-						String str = (String) text.getText();
-						int id = 0;
-						
-						for(int i = 0; i < EffectsFactory.getNumberOfEffectsAvailable(); i++)
-							if(str.compareTo(EffectsFactory.getEffect(i).getName()) == 0){
-								id = i;
-								break;
+						@Override
+						public void onClick(View view) {
+
+							try{
+								ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+								LinearLayout layout = (LinearLayout) view;
+								TextView text = (TextView) layout.getChildAt(0);
+								String str = (String) text.getText();
+								int id = 0;
+
+								for(int i = 0; i < EffectsFactory.getNumberOfEffectsAvailable(); i++)
+									if(str.compareTo(EffectsFactory.getEffect(i).getName()) == 0){
+										id = i;
+										break;
+									}
+
+								currentImage = EffectsFactory.getEffect(id).applyEffect(
+										Bitmap.createScaledBitmap(image, imageView.getWidth(), imageView.getHeight(), false));
+
+								imageView.setImageBitmap(currentImage);
+
+								Button undoButton = (Button) findViewById(R.id.undoButton);
+								undoButton.setVisibility(View.VISIBLE);
 							}
-						
-						currentImage = EffectsFactory.getEffect(id).applyEffect(
-								Bitmap.createScaledBitmap(image, imageView.getWidth(), imageView.getHeight(), false));
-						
-						imageView.setImageBitmap(currentImage);
-						
-						Button undoButton = (Button) findViewById(R.id.undoButton);
-						undoButton.setVisibility(View.VISIBLE);
-					}
-				});
+							catch(Exception ex){
+								Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
+							}
+						}
+					});
+				}
+				catch(Exception ex){
+					Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+				}
 			}
 		}
 	}
