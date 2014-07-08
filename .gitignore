@@ -1,2 +1,4 @@
-*.class
-*.apk
+**/*.class
+**/*.apk
+*.class*
+.gitignore
