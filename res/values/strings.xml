@@ -3,10 +3,28 @@
 
     <string name="app_name">EldPhoto</string>
     <string name="action_settings">Settings</string>
-    <string name="welcome">Welcome to EldPhoto</string>
-    <string name="user">Username</string>
-    <string name="pass">Password</string>
+    <string name="welcome">ELDPHOTO</string>
+    <string name="user">Username:</string>
+    <string name="pass">Password:</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="hello_world">Hello world!</string>
-
+    <string name="savepass">Save Password</string>
+    
+    <string name="title_activity_cam">Click to take a picture</string>
+    <string name="title_activity_deal_with_picture">What now?</string>
+    <string name="ACTION_CAM">org.eldorado.eldphoto.CAM</string>
+    <string name="ACTION_DEAL_WITH_PICTURE">org.eldorado.eldphoto.DEAL_WITH_PICTURE</string>
+    <string name="text_choosing_filters">Choose a filter:</string>
+    <string name="deal_with_picture_text">Choose what you want to do next:</string>
+    <string name="cancelButton">Cancel</string>
+    <string name="sendButton">Send</string>
+    <string name="undoFilterButton">Undo</string>
+    <string name="text_filter1">filter 1</string>
+    <string name="text_filter2">filter 2</string>
+    <string name="text_filter3">filter 3</string>
+    <string name="content_filter3">Filter 3 sample</string>
+    
+    <string name="take_picture">Take new Picture</string>
+    <string name="upload">Send</string>
 </resources>
+

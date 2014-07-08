@@ -11,14 +11,17 @@
     <!-- Accessing camera hardware -->
     <uses-feature android:name="android.hardware.camera" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.INTERNET" />    
+	<uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/pic_send"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
             android:name="org.eldorado.eldphoto.LoginActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,8 +31,32 @@
         </activity>
         <activity
             android:name="org.eldorado.eldphoto.MainActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_main" >
         </activity>
+        
+        <activity
+            android:name="org.eldorado.eldphoto.CamActivity"
+            android:noHistory="true"
+            android:label="@string/title_activity_cam"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" >
+            
+            <intent-filter>
+                <action android:name="@string/ACTION_CAM" />
+            </intent-filter>
+            
+        </activity>
+        <activity
+            android:name="org.eldorado.eldphoto.DealWithPictureActivity"
+            android:noHistory="true"
+            android:label="@string/title_activity_deal_with_picture" >
+            
+            <intent-filter>
+                <action android:name="@string/ACTION_DEAL_WITH_PICTURE"/>
+            </intent-filter>
+        </activity>
+        
     </application>
 
 </manifest>

@@ -1,0 +1,166 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/FrameLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:overScrollMode="always"
+    android:background="@drawable/login_backgroud"
+    android:scrollbarStyle="insideOverlay"
+    android:scrollbars="horizontal|vertical"
+    tools:context="${packageName}.${activityClass}" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:padding="12sp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" />
+    
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/text_choosing_filters"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10sp"
+            android:paddingTop="10sp"
+            android:textStyle="bold"
+            android:layout_alignParentTop="true"
+            android:text="@string/deal_with_picture_text"
+            android:background="#77FFFFFF" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_choosing_filters"
+            android:background="#77FFFFFF"
+            android:gravity="top" >
+
+            <Button
+                android:id="@+id/Button1"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_action_cancel"
+                android:onClick="showFilters"
+                android:text="@string/cancelButton"
+                android:alpha="1.0" />
+
+            <Button
+                android:id="@+id/Button2"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_action_accept"
+                android:onClick="sendPicture"
+                android:text="@string/sendButton"
+                android:alpha="1.0" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/filterLayout"
+            android:layout_width="fill_parent"
+            android:background="#77FFFFFF"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center|end"
+            android:orientation="vertical" >
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:enabled="false"
+                android:gravity="center_horizontal"
+                android:onClick="undoFilter"
+                android:textStyle="bold"
+                android:text="@string/undoFilterButton" />
+
+            <ViewFlipper
+                android:id="@+id/viewFlipper1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="#77FFFFFF"
+                android:animateFirstView="true">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:alpha="1.0" >
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:text="@string/text_filter1"
+                        android:alpha="1.0" />
+
+                    <ImageView
+                        android:id="@+id/imageFilter1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:alpha="1.0" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:alpha="1.0" >
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:text="@string/text_filter2"
+                        android:alpha="1.0" />
+
+                    <ImageView
+                        android:id="@+id/imageFilter2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:alpha="1.0" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:alpha="1.0"
+                     >
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:text="@string/text_filter3"
+                        android:alpha="1.0" />
+
+                    <ImageView
+                        android:id="@+id/imageFilter3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/content_filter3"
+                        android:alpha="1.0" />
+                </LinearLayout>
+
+            </ViewFlipper>
+        </LinearLayout>
+    </RelativeLayout>
+
+</FrameLayout>
