@@ -4,12 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:overScrollMode="always"
+    android:background="@drawable/login_backgroud"
     android:scrollbarStyle="insideOverlay"
     android:scrollbars="horizontal|vertical"
     tools:context="${packageName}.${activityClass}" >
 
     <ImageView
         android:id="@+id/imageView1"
+        android:padding="12sp"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1" />
@@ -21,16 +23,20 @@
 
         <TextView
             android:id="@+id/text_choosing_filters"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="10sp"
+            android:paddingTop="10sp"
+            android:textStyle="bold"
             android:layout_alignParentTop="true"
             android:text="@string/deal_with_picture_text"
-            android:background="#ffff" />
+            android:background="#77FFFFFF" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_choosing_filters"
+            android:background="#77FFFFFF"
             android:gravity="top" >
 
             <Button
@@ -57,6 +63,7 @@
         <LinearLayout
             android:id="@+id/filterLayout"
             android:layout_width="fill_parent"
+            android:background="#77FFFFFF"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:gravity="center|end"
@@ -69,12 +76,14 @@
                 android:enabled="false"
                 android:gravity="center_horizontal"
                 android:onClick="undoFilter"
+                android:textStyle="bold"
                 android:text="@string/undoFilterButton" />
 
             <ViewFlipper
                 android:id="@+id/viewFlipper1"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:background="#77FFFFFF"
                 android:animateFirstView="true">
 
                 <LinearLayout

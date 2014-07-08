@@ -147,4 +147,12 @@ public class MainActivity extends Activity {
 
 		return mediaFile;
 	}
+	
+	@Override
+	public void onBackPressed() {
+		//super.onBackPressed();
+		finish();
+		System.exit(0);
+		
+	}
 }

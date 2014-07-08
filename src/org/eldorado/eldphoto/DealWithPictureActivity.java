@@ -1,6 +1,7 @@
 package org.eldorado.eldphoto;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -64,6 +65,15 @@ public class DealWithPictureActivity extends Activity {
 		
 		viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper1);
 		viewFlipper.setBackgroundColor(Color.argb(90, 255, 255, 255));
+		
+		Button cancel = (Button)findViewById(R.id.Button1);
+		cancel.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+				System.exit(0);
+			}
+		});
 	}
 	
 	@Override
@@ -75,7 +85,6 @@ public class DealWithPictureActivity extends Activity {
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-
 		switch (event.getAction())
         {
                // when user first touches the screen to swap
@@ -134,4 +143,14 @@ public class DealWithPictureActivity extends Activity {
 	 * @param view
 	 */
 	public void sendPicture(View view){}
+	
+	
+	@Override
+	public void onBackPressed() {
+		//super.onBackPressed();
+		finish();
+		System.exit(0);
+		/*Intent nextIntent = new Intent(DealWithPictureActivity.this, MainActivity.class);
+		DealWithPictureActivity.this.startActivity(nextIntent);	*/
+	}
 }

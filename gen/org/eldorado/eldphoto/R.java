@@ -8,6 +8,12 @@
 package org.eldorado.eldphoto;
 
 public final class R {
+    public static final class anim {
+        public static final int in_from_left=0x7f040000;
+        public static final int in_from_right=0x7f040001;
+        public static final int out_to_left=0x7f040002;
+        public static final int out_to_right=0x7f040003;
+    }
     public static final class attr {
     }
     public static final class dimen {
@@ -17,29 +23,35 @@ public final class R {
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
          */
-        public static final int activity_horizontal_margin=0x7f040000;
-        public static final int activity_vertical_margin=0x7f040001;
+        public static final int activity_horizontal_margin=0x7f050000;
+        public static final int activity_vertical_margin=0x7f050001;
     }
     public static final class drawable {
-        public static final int eldorado=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
-        public static final int logo=0x7f020002;
+        public static final int button_login=0x7f020000;
+        public static final int camera_pic=0x7f020001;
+        public static final int camera_pic2=0x7f020002;
+        public static final int camera_pic3=0x7f020003;
+        public static final int eld=0x7f020004;
+        public static final int eld2=0x7f020005;
+        public static final int eldorado=0x7f020006;
+        public static final int ic_action_accept=0x7f020007;
+        public static final int ic_action_cancel=0x7f020008;
+        public static final int login_backgroud=0x7f020009;
+        public static final int logo=0x7f02000a;
+        public static final int main_backgroud=0x7f02000b;
+        public static final int photo_example=0x7f02000c;
+        public static final int pic_send=0x7f02000d;
+        public static final int send_pic=0x7f02000e;
+        public static final int send_pic2=0x7f02000f;
     }
     public static final class id {
-<<<<<<< HEAD
-        public static final int action_settings=0x7f080005;
-        public static final int btnCapturePicture=0x7f080003;
-        public static final int btnUploadPicture=0x7f080004;
-        public static final int login=0x7f080002;
-        public static final int pass=0x7f080001;
-        public static final int user=0x7f080000;
-=======
         public static final int Button1=0x7f090005;
         public static final int Button2=0x7f090006;
         public static final int FrameLayout1=0x7f090003;
-        public static final int action_settings=0x7f090015;
-        public static final int btnCapturePicture=0x7f090013;
-        public static final int btnUploadPicture=0x7f090014;
+        public static final int LastPicture=0x7f090013;
+        public static final int action_settings=0x7f090016;
+        public static final int btnCapturePicture=0x7f090014;
+        public static final int btnUploadPicture=0x7f090015;
         public static final int camera_preview=0x7f090000;
         public static final int filterLayout=0x7f090007;
         public static final int imageFilter1=0x7f09000a;
@@ -56,41 +68,18 @@ public final class R {
         public static final int text_choosing_filters=0x7f090001;
         public static final int user=0x7f09000f;
         public static final int viewFlipper1=0x7f090008;
->>>>>>> eldphoto/pass_encrypt
     }
     public static final class layout {
-        public static final int activity_login=0x7f030000;
-        public static final int activity_main=0x7f030001;
+        public static final int activity_cam=0x7f030000;
+        public static final int activity_deal_with_picture=0x7f030001;
+        public static final int activity_login=0x7f030002;
+        public static final int activity_main=0x7f030003;
     }
     public static final class menu {
-        public static final int login=0x7f070000;
-        public static final int main=0x7f070001;
+        public static final int login=0x7f080000;
+        public static final int main=0x7f080001;
     }
     public static final class string {
-<<<<<<< HEAD
-        public static final int ACTION_CAM=0x7f050009;
-        public static final int ACTION_DEAL_WITH_PICTURE=0x7f05000a;
-        public static final int action_settings=0x7f050001;
-        public static final int app_name=0x7f050000;
-        public static final int cancelButton=0x7f05000d;
-        public static final int content_filter3=0x7f050013;
-        public static final int deal_with_picture_text=0x7f05000c;
-        public static final int hello_world=0x7f050006;
-        public static final int pass=0x7f050004;
-        public static final int sendButton=0x7f05000e;
-        public static final int take_picture=0x7f050014;
-        public static final int text_choosing_filters=0x7f05000b;
-        public static final int text_filter1=0x7f050010;
-        public static final int text_filter2=0x7f050011;
-        public static final int text_filter3=0x7f050012;
-        public static final int title_activity_cam=0x7f050007;
-        public static final int title_activity_deal_with_picture=0x7f050008;
-        public static final int title_activity_main=0x7f050005;
-        public static final int undoFilterButton=0x7f05000f;
-        public static final int upload=0x7f050015;
-        public static final int user=0x7f050003;
-        public static final int welcome=0x7f050002;
-=======
         public static final int ACTION_CAM=0x7f06000a;
         public static final int ACTION_DEAL_WITH_PICTURE=0x7f06000b;
         public static final int action_settings=0x7f060001;
@@ -114,7 +103,6 @@ public final class R {
         public static final int upload=0x7f060016;
         public static final int user=0x7f060003;
         public static final int welcome=0x7f060002;
->>>>>>> eldphoto/pass_encrypt
     }
     public static final class style {
         /** 
@@ -127,10 +115,10 @@ public final class R {
             backward-compatibility can go here.
         
          */
-        public static final int AppBaseTheme=0x7f060000;
+        public static final int AppBaseTheme=0x7f070000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f060001;
+        public static final int AppTheme=0x7f070001;
     }
 }

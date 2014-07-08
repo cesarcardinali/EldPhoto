@@ -44,7 +44,7 @@ public class LoginActivity extends Activity {
 		login = (Button) findViewById(R.id.login);
 		chkRememberMe = (CheckBox) findViewById(R.id.savepass);
 		
-
+/*
 		SharedPreferences loginPreferences = getSharedPreferences(SPF_NAME,
 	            Context.MODE_PRIVATE);		
 		
@@ -70,26 +70,19 @@ public class LoginActivity extends Activity {
 					Toast.LENGTH_LONG).show();
 		}
 
-		
-		
+		*/
 		
 		login.setOnClickListener(new Button.OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
-				//				Intent nextIntent = new Intent(LoginActivity.this, MainActivity.class);
-				//				//nextIntent.putExtra("nome", "user");
-				//				LoginActivity.this.startActivity(nextIntent);
+				Intent nextIntent = new Intent(LoginActivity.this, MainActivity.class);
+				//nextIntent.putExtra("nome", "user");
+				LoginActivity.this.startActivity(nextIntent);
 				
-
-				String uname = un.getText().toString();
+				/*String uname = un.getText().toString();
 				String pwd = pw.getText().toString();
-				
-			
-				
-
 				validateUserTask task = new validateUserTask();
-				task.execute(new String[]{uname, pwd});				
+				task.execute(new String[]{uname, pwd});		*/		
 			}
 		});
 	}
@@ -170,8 +163,17 @@ public class LoginActivity extends Activity {
 	
 		protected void onProgressUpdate(Integer... progress) {
 			Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+			Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+			startActivity(intent);
 		}
 		
-	}// close validateUserTask 		
+	}// close validateUserTask
+	
+	@Override
+	public void onBackPressed() {
+		//super.onBackPressed();
+		finish();
+		System.exit(0);
+	}
 
 }
