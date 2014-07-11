@@ -37,8 +37,9 @@ public final class R {
         public static final int Button1=0x7f090005;
         public static final int Button2=0x7f090006;
         public static final int FrameLayout1=0x7f090003;
-        public static final int action_settings=0x7f090010;
+        public static final int action_settings=0x7f090011;
         public static final int btnCapturePicture=0x7f09000e;
+        public static final int btnSelectPicture=0x7f090010;
         public static final int btnUploadPicture=0x7f09000f;
         public static final int camera_preview=0x7f090000;
         public static final int filterLayout=0x7f090007;

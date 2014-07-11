@@ -57,15 +57,20 @@ public class DealWithPictureActivity extends Activity {
 		setContentView(R.layout.activity_deal_with_picture);
 
 		//retrieves the picture data from the intent
-		picture = EldPhotoApplication.getPicture();
-		
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inPurgeable = true; //allows the system to reclaim memory
-		options.inInputShareable = true; //keeps a shallow reference to the data
-		
-		//converts the byte array into bitmap
-		image = BitmapFactory.decodeByteArray(picture, 0, picture.length, options);
+		if (EldPhotoApplication.hasBitmap() == true) {
+			image = EldPhotoApplication.getBitmap();
+		}
+		else {
+			picture = EldPhotoApplication.getPicture();
+			
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inPurgeable = true; //allows the system to reclaim memory
+			options.inInputShareable = true; //keeps a shallow reference to the data
 
+			//converts the byte array into bitmap
+			image = BitmapFactory.decodeByteArray(picture, 0, picture.length, options);
+		}
+		
 		//if this is the first time the activity is created for that picture, ...
 		if(currentImage == null)
 			//saves the image as the current image
