@@ -34,22 +34,23 @@ public final class R {
         public static final int eld=0x7f020004;
         public static final int eld2=0x7f020005;
         public static final int eldorado=0x7f020006;
-        public static final int ic_action_accept=0x7f020007;
-        public static final int ic_action_cancel=0x7f020008;
-        public static final int login_backgroud=0x7f020009;
-        public static final int logo=0x7f02000a;
-        public static final int main_backgroud=0x7f02000b;
-        public static final int photo_example=0x7f02000c;
-        public static final int pic_send=0x7f02000d;
-        public static final int send_pic=0x7f02000e;
-        public static final int send_pic2=0x7f02000f;
+        public static final int eldorado2=0x7f020007;
+        public static final int ic_action_accept=0x7f020008;
+        public static final int ic_action_cancel=0x7f020009;
+        public static final int login_backgroud=0x7f02000a;
+        public static final int logo=0x7f02000b;
+        public static final int main_backgroud=0x7f02000c;
+        public static final int photo_example=0x7f02000d;
+        public static final int pic_send=0x7f02000e;
+        public static final int send_pic=0x7f02000f;
+        public static final int send_pic2=0x7f020010;
     }
     public static final class id {
         public static final int Button1=0x7f090005;
         public static final int Button2=0x7f090006;
         public static final int FrameLayout1=0x7f090003;
         public static final int LastPicture=0x7f090013;
-        public static final int action_settings=0x7f090016;
+        public static final int action_settings=0x7f090017;
         public static final int btnCapturePicture=0x7f090014;
         public static final int btnUploadPicture=0x7f090015;
         public static final int camera_preview=0x7f090000;
@@ -58,6 +59,7 @@ public final class R {
         public static final int imageFilter2=0x7f09000c;
         public static final int imageFilter3=0x7f09000e;
         public static final int imageView1=0x7f090004;
+        public static final int imgLogo=0x7f090016;
         public static final int listView=0x7f090002;
         public static final int login=0x7f090012;
         public static final int pass=0x7f090010;
@@ -74,10 +76,12 @@ public final class R {
         public static final int activity_deal_with_picture=0x7f030001;
         public static final int activity_login=0x7f030002;
         public static final int activity_main=0x7f030003;
+        public static final int activity_splash_screen=0x7f030004;
     }
     public static final class menu {
         public static final int login=0x7f080000;
         public static final int main=0x7f080001;
+        public static final int splash_screen=0x7f080002;
     }
     public static final class string {
         public static final int ACTION_CAM=0x7f06000a;
@@ -99,6 +103,7 @@ public final class R {
         public static final int title_activity_cam=0x7f060008;
         public static final int title_activity_deal_with_picture=0x7f060009;
         public static final int title_activity_main=0x7f060005;
+        public static final int title_activity_splash_screen=0x7f060017;
         public static final int undoFilterButton=0x7f060010;
         public static final int upload=0x7f060016;
         public static final int user=0x7f060003;
