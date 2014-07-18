@@ -1,0 +1,106 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top|center_horizontal"
+    android:orientation="vertical"
+    android:background="@drawable/login_backgroud"
+    android:paddingTop="20sp"
+    tools:context=".LoginActivity" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/eld"
+        android:gravity="left|bottom"
+        android:textSize="22sp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15sp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="15sp"
+         >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15sp"
+            android:gravity="left"
+            android:orientation="horizontal"
+            android:padding="15sp" >
+
+            <TextView
+                android:layout_width="35pt"
+                android:layout_height="fill_parent"
+                android:layout_gravity="left|center_vertical"
+                android:gravity="center_vertical"
+                android:text="@string/user"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/user"
+                android:layout_width="60pt"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:inputType="textAutoComplete"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:orientation="horizontal"
+            android:padding="15sp" >
+
+            <TextView
+                android:layout_width="35pt"
+                android:layout_height="fill_parent"
+                android:layout_gravity="left|center_vertical"
+                android:gravity="center_vertical"
+                android:text="@string/pass"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/pass"
+                android:layout_width="60pt"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:inputType="textPassword"
+                android:textSize="14sp" />
+        </LinearLayout>
+    
+    <CheckBox
+        android:id="@+id/savepass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/savepass"
+        android:textSize="13sp"
+        android:scaleX="0.70"
+    	android:scaleY="0.70" />
+    
+        <Button
+            android:id="@+id/login"
+            android:layout_width="60pt"
+            android:layout_height="45sp"
+            android:layout_margin="0sp"
+            android:background="@drawable/button_login"
+            android:text="Entrar"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_horizontal|bottom"
+        android:layout_margin="0dp"
+        android:padding="0dp"
+        android:text="Desenvolvido pelo Institudo de Pesquisas Eldorado"
+        android:textSize="12sp" />
+
+</LinearLayout>
