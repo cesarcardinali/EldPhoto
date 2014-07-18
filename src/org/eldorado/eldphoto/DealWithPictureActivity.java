@@ -1,10 +1,5 @@
 package org.eldorado.eldphoto;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -13,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -109,7 +103,6 @@ public class DealWithPictureActivity extends Activity {
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-
 		switch (event.getAction())
         {
                // when user first touches the screen to swap

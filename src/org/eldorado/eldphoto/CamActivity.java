@@ -174,4 +174,11 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 		listView.setAdapter(adapter);
 		listView.setBackgroundColor(Color.argb(80, 255, 255, 255));
 	}
+	
+	@Override
+	public void onBackPressed() {
+		//super.onBackPressed();
+		finish();
+		System.exit(0);
+	}
 }
