@@ -4,19 +4,25 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
+import android.os.Environment;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
+import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -36,7 +42,12 @@ public class MainActivity extends Activity {
 	private Button btnUploadPicture;
 	private Button btnCapturePicture;
 	private Button btnSelectPicture;
-	private File tempFile = new File("/sdcard/.a.jpg");
+	String[] FilePathStrings;
+    String[] FileNameStrings;
+    GridView grid;
+	File tempFile;
+    File[] allFiles;
+    ArrayAdapter<String> adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +57,13 @@ public class MainActivity extends Activity {
 		/**
 		 * Capture image button click event
 		 */
+		String storagePatch = Environment.getExternalStorageDirectory().getAbsolutePath();
+		tempFile = new File(storagePatch + "/Eldphoto/a.jpg");
+				
 		btnSelectPicture = (Button) findViewById(R.id.btnSelectPicture);
 		btnCapturePicture = (Button) findViewById(R.id.btnCapturePicture);
+		
 		btnCapturePicture.setOnClickListener(new View.OnClickListener() {
-
-
 			@Override
 			public void onClick(View v) {
 				// capture picture
@@ -59,15 +72,33 @@ public class MainActivity extends Activity {
 		});
 		
 		btnSelectPicture.setOnClickListener(new View.OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				// selectImage();
 
-					selectImage();
-
+				Intent i = new Intent(MainActivity.this, ShowPicsActivity.class);
+				startActivity(i);
+				
+				/*File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Eldphoto");
+				allFiles = folder.listFiles();
+				FilePathStrings = new String[allFiles.length];
+	            FileNameStrings = new String[allFiles.length];
+				for (int i = 0; i < allFiles.length; i++) {
+	                // Get the path of the image file
+	                FilePathStrings[i] = allFiles[i].getAbsolutePath();
+	                // Get the name image file
+	                FileNameStrings[i] = allFiles[i].getName();
+	            }
+				adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, FileNameStrings);*/
+				
+				
+				/*Toast.makeText(getApplicationContext(),"" + folder.list().length + "\n" + folder.getAbsolutePath()+ "\n" + allFiles.length,Toast.LENGTH_LONG).show();
+				for (int i = 0; i < allFiles.length; i++){
+					if(allFiles[i].isFile()){
+						Toast.makeText(getApplicationContext(),"Name: " + allFiles[i].getName().toString(),Toast.LENGTH_LONG).show();
+					}
+				}*/
 			}
-
 		});
 	
 
@@ -173,26 +204,17 @@ public class MainActivity extends Activity {
 	}
 	
 	private void selectImage() {
-		// TODO Auto-generated method stub
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 		intent.setDataAndType(MediaStore.Images.Media.INTERNAL_CONTENT_URI,
 				"image/*");
 		intent.setType("image/*");
 		intent.putExtra("output", Uri.fromFile(tempFile));
 		intent.putExtra("crop", "true");
-//				intent.putExtra("aspectX", 1);
-//				intent.putExtra("aspectY", 1);
-//				intent.putExtra("outputX", PHOTO_SIZE_WIDTH);
-//				intent.putExtra("outputY", PHOTO_SIZE_HEIGHT);
 		startActivityForResult(intent, SELECT_IMAGE_REQUEST_CODE);
-
-
-//		imgPreview.setImageBitmap(BitmapFactory.decodeFile(tempFile.getAbsolutePath()));
 	}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
 		
 		if (requestCode == SELECT_IMAGE_REQUEST_CODE) {

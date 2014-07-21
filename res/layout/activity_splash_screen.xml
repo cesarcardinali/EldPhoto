@@ -3,14 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="40sp"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:background="@drawable/login_backgroud" >
  
     <ImageView
         android:id="@+id/imgLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="40sp"
+        android:paddingTop="60pt"
         android:src="@drawable/eldorado2" />
+
+    <TextView
+        android:id="@+id/EldsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imgLogo"
+        android:layout_alignRight="@id/imgLogo"
+        android:paddingTop="5sp"
+        android:textStyle="italic"
+        android:text="Presents" />
  
 </RelativeLayout>

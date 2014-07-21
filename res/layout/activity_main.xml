@@ -37,8 +37,6 @@
             android:drawablePadding="4sp"
             android:text="@string/take_picture" />
 
-        <!-- List captured pictures button -->
-
         <Button
             android:id="@+id/btnUploadPicture"
             android:layout_width="wrap_content"
@@ -46,11 +44,14 @@
             android:text="@string/upload"
             android:drawableTop="@drawable/send_pic2"
             android:drawablePadding="4sp" />
-                <Button
+        
+        <Button
             android:id="@+id/btnSelectPicture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
+            android:drawablePadding="36sp"
+            android:drawableTop="@android:drawable/sym_contact_card"
             android:text="Show Pictures" />
     </LinearLayout>
 

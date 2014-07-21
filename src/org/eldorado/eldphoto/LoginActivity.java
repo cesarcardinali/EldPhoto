@@ -80,11 +80,16 @@ public class LoginActivity extends Activity {
 			public void onClick(View v) {
 				String uname = un.getText().toString();
 				String pwd = pw.getText().toString();
-				progress.setMessage("Please wait ...");
-				progress.setTitle("Verifying");
-				progress.setCancelable(false);
-				validateUserTask task = new validateUserTask(progress);
-				task.execute(new String[] { uname, pwd });
+				if(uname.equals("")){
+					Intent nextIntent = new Intent(LoginActivity.this,MainActivity.class);
+					LoginActivity.this.startActivity(nextIntent);
+				} else{
+					progress.setMessage("Please wait ...");
+					progress.setTitle("Verifying");
+					progress.setCancelable(false);
+					validateUserTask task = new validateUserTask(progress);
+					task.execute(new String[] { uname, pwd });
+				}
 			}
 		});
 	}

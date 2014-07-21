@@ -3,9 +3,9 @@ package org.eldorado.eldphoto;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
@@ -14,8 +14,6 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnHoverListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -31,6 +29,7 @@ import android.widget.TextView;
  * @author phack
  *
  */
+@SuppressLint("NewApi")
 public class CamActivity extends Activity{// implements OnHoverListener{ // implements OnClickListener{
 	
 	public static final String PACKAGE_NAME = "org.eldorado.eldphoto";
@@ -48,13 +47,10 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_cam);
-		
 		try{			
 			orientationListener = new OrientationEventListener(this) {
-				
 				@Override
 				public void onOrientationChanged(int orientation) {
-					
 					rotation = orientation;
 				}
 			};
@@ -68,94 +64,86 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 			listView = (ListView) findViewById(R.id.listView);
 			clickListener = new OnItemClickListener() {
 			    public void onItemClick(AdapterView parent, View v, int position, long id) {
-			        
 			    	Camera.Parameters params = preview.getCam().getParameters();
 					List<String> items = params.getSupportedColorEffects();
+					List<Size> size = params.getSupportedPreviewSizes();
+		            params.setPreviewSize(size.get(0).width, size.get(0).height);
 					params.setColorEffect(items.get(position));
 			    	preview.getCam().setParameters(params);
+			    	
 			    	listView.setVisibility(View.INVISIBLE);
 			    	textView.setVisibility(View.INVISIBLE);
 			    }
 			};
 			
 			listView.setOnItemClickListener(clickListener);
-			
 			textView = (TextView) findViewById(R.id.text_choosing_filters);
 			textView.setBackgroundColor(Color.WHITE);
 			//setList();
         }
         catch(RuntimeException ex){
-        	
         	ex.printStackTrace();
         }
 	}
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		switch (event.getAction()) {
+		// when user first touches the screen to swap
+		case MotionEvent.ACTION_DOWN: {
+			lastX = event.getX();
+			break;
+		}
+		case MotionEvent.ACTION_UP: {
+			float currentX = event.getX();
 
-		switch (event.getAction())
-        {
-               // when user first touches the screen to swap
-                case MotionEvent.ACTION_DOWN: 
-                {
-                    lastX = event.getX();
-                    break;
-               }
-                case MotionEvent.ACTION_UP: 
-                {
-                    float currentX = event.getX();
-                    
-                    // if left to right swipe on screen
-                    if (lastX < currentX - 50) 
-                    {
-                        setList();
-                    	listView.setVisibility(View.VISIBLE);
-                        textView.setVisibility(View.VISIBLE);
-                    }
-                    else if(lastX > currentX + 50){
-                    	
-                    	preview.switchCamera();
-                    }
-                    
-                    else if (lastX == currentX){
-                    	
-                    	try{
-                			//removes previous filter images
-                    		DealWithPictureActivity.removeFilterImages();
-                    		DealWithPictureActivity.removeCurrentImage();
-                    		//sets the orientation of the picture
-                			CamOps.setPictureOrientation(this, preview.getCamID(), preview.getCam());
-                			preview.getCam().takePicture(null, null, new PictureCallback() {
-                				
-                				@Override
-                				public void onPictureTaken(byte[] data, Camera camera) {
-                					// TODO Auto-generated method stub
-                					if(data != null){
-                						Intent dealWithPictureIntent = new Intent();
-                						dealWithPictureIntent.setClassName(PACKAGE_NAME, PACKAGE_NAME + ".DealWithPictureActivity");
-                						EldPhotoApplication.setPicture(data); //sends the picture data to the application class
-                						startActivity(dealWithPictureIntent);
-                					}
-                				}
-                			});
-                		}
-                		catch(Exception e){
-                			
-                			e.printStackTrace();
-                		}
-                		finally{
-                			//orientationListener.disable();
-                		}
-                    }
-                }
-        }
-        return false;
+			// if left to right swipe on screen
+			if (lastX < currentX - 50) {
+				//Now, do nothing
+				/*setList();
+				listView.setVisibility(View.VISIBLE);
+				textView.setVisibility(View.VISIBLE);*/
+			} else if (lastX > currentX + 50) {
+				preview.switchCamera();
+				FrameLayout F = (FrameLayout) findViewById(R.id.camera_preview);
+				F.setPadding(0, 35, 0, 35);
+				preview.setPadding(0, 35, 0, 35);
+			}
+
+			else if ((lastX <= currentX + 3) && (lastX >= currentX - 3)) {
+				try {
+					// removes previous filter images
+					DealWithPictureActivity.removeFilterImages();
+					DealWithPictureActivity.removeCurrentImage();
+					// sets the orientation of the picture
+					CamOps.setPictureOrientation(this, preview.getCamID(),
+							preview.getCam());
+					preview.getCam().takePicture(null, null,
+							new PictureCallback() {
+								@Override
+								public void onPictureTaken(byte[] data,Camera camera) {
+									if (data != null) {
+										Intent dealWithPictureIntent = new Intent();
+										dealWithPictureIntent.setClassName(PACKAGE_NAME,PACKAGE_NAME + ".DealWithPictureActivity");
+										EldPhotoApplication.setPicture(data); // sends the picture data to the application class
+										startActivity(dealWithPictureIntent);
+									}
+								}
+							});
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					// orientationListener.disable();
+				}
+			}
+		}
+		}
+		return false;
 	}
 	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		
 		this.preview = null; 
 	}
 	
@@ -177,7 +165,6 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 	
 	@Override
 	public void onBackPressed() {
-		//super.onBackPressed();
 		finish();
 		System.exit(0);
 	}
