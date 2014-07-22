@@ -2,6 +2,8 @@ package org.eldorado.eldphoto;
 
 import java.io.File;
 
+import org.eldorado.eldphoto.support.GridViewAdapter;
+
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
@@ -29,8 +31,7 @@ public class ShowPicsActivity extends Activity {
 		
 		if (!Environment.getExternalStorageState().equals(
 	            Environment.MEDIA_MOUNTED)) {
-	        Toast.makeText(this, "Error! No SDCARD Found!", Toast.LENGTH_LONG)
-	                .show();
+	        Toast.makeText(this, "Error! No SDCARD Found!", Toast.LENGTH_LONG).show();
 	    } else {
 	        // Locate the image folder in your SD Card
 	        file = new File(Environment.getExternalStorageDirectory() + File.separator + "Eldphoto");

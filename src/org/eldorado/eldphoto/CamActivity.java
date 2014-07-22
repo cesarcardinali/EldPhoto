@@ -1,8 +1,8 @@
 package org.eldorado.eldphoto;
 
-import java.util.ArrayList;
 import java.util.List;
-
+import org.eldorado.eldphoto.support.CamOps;
+import org.eldorado.eldphoto.support.CamPreview;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -16,7 +16,6 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -63,7 +62,7 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 			frame.addView(preview);
 			listView = (ListView) findViewById(R.id.listView);
 			clickListener = new OnItemClickListener() {
-			    public void onItemClick(AdapterView parent, View v, int position, long id) {
+			    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 			    	Camera.Parameters params = preview.getCam().getParameters();
 					List<String> items = params.getSupportedColorEffects();
 					List<Size> size = params.getSupportedPreviewSizes();
@@ -79,7 +78,6 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 			listView.setOnItemClickListener(clickListener);
 			textView = (TextView) findViewById(R.id.text_choosing_filters);
 			textView.setBackgroundColor(Color.WHITE);
-			//setList();
         }
         catch(RuntimeException ex){
         	ex.printStackTrace();
@@ -96,18 +94,23 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 		}
 		case MotionEvent.ACTION_UP: {
 			float currentX = event.getX();
-
+			int aux = 0;
 			// if left to right swipe on screen
 			if (lastX < currentX - 50) {
-				//Now, do nothing
-				/*setList();
-				listView.setVisibility(View.VISIBLE);
-				textView.setVisibility(View.VISIBLE);*/
+				//For now, do nothing
 			} else if (lastX > currentX + 50) {
 				preview.switchCamera();
-				FrameLayout F = (FrameLayout) findViewById(R.id.camera_preview);
-				F.setPadding(0, 35, 0, 35);
-				preview.setPadding(0, 35, 0, 35);
+				if (aux == 0){
+					FrameLayout F = (FrameLayout) findViewById(R.id.camera_preview);
+					F.setPadding(0, 35, 0, 35);
+					preview.setPadding(0, 35, 0, 35);
+					aux = 1;
+				} else {
+					FrameLayout F = (FrameLayout) findViewById(R.id.camera_preview);
+					F.setPadding(0, 0, 0, 0);
+					preview.setPadding(0, 0, 0, 0);
+					aux = 0;
+				}
 			}
 
 			else if ((lastX <= currentX + 3) && (lastX >= currentX - 3)) {
@@ -116,20 +119,18 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 					DealWithPictureActivity.removeFilterImages();
 					DealWithPictureActivity.removeCurrentImage();
 					// sets the orientation of the picture
-					CamOps.setPictureOrientation(this, preview.getCamID(),
-							preview.getCam());
-					preview.getCam().takePicture(null, null,
-							new PictureCallback() {
-								@Override
-								public void onPictureTaken(byte[] data,Camera camera) {
-									if (data != null) {
-										Intent dealWithPictureIntent = new Intent();
-										dealWithPictureIntent.setClassName(PACKAGE_NAME,PACKAGE_NAME + ".DealWithPictureActivity");
-										EldPhotoApplication.setPicture(data); // sends the picture data to the application class
-										startActivity(dealWithPictureIntent);
-									}
-								}
-							});
+					CamOps.setPictureOrientation(this, preview.getCamID(),preview.getCam());
+					preview.getCam().takePicture(null, null,new PictureCallback() {
+						@Override
+						public void onPictureTaken(byte[] data,Camera camera) {
+							if (data != null) {
+								Intent dealWithPictureIntent = new Intent();
+								dealWithPictureIntent.setClassName(PACKAGE_NAME,PACKAGE_NAME + ".DealWithPictureActivity");
+								EldPhotoApplication.setPicture(data); // sends the picture data to the application class
+								startActivity(dealWithPictureIntent);
+							}
+						}
+					});
 				} catch (Exception e) {
 					e.printStackTrace();
 				} finally {
@@ -147,25 +148,27 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 		this.preview = null; 
 	}
 	
-	public OrientationEventListener getOrientationListener(){ return orientationListener;}
-	public int getRotation(){ return rotation;}
-	public CamPreview getPreview(){ return preview;}
-	public void removeOrientationListener(){ orientationListener = null;}
-	
-	private void setList(){
-		
-		Camera.Parameters params = preview.getCam().getParameters();
-		List<String> items = params.getSupportedColorEffects();
-		
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
-		listView.setAdapter(null);
-		listView.setAdapter(adapter);
-		listView.setBackgroundColor(Color.argb(80, 255, 255, 255));
-	}
-	
 	@Override
 	public void onBackPressed() {
 		finish();
 		System.exit(0);
+	}
+	
+	
+	// Getter and Setters
+	public OrientationEventListener getOrientationListener() {
+		return orientationListener;
+	}
+
+	public int getRotation() {
+		return rotation;
+	}
+
+	public CamPreview getPreview() {
+		return preview;
+	}
+
+	public void removeOrientationListener() {
+		orientationListener = null;
 	}
 }

@@ -1,6 +1,7 @@
 package org.eldorado.eldphoto;
 
 import org.eldorado.eldphoto.R;
+import org.eldorado.eldphoto.support.SimpleAES;
 
 import java.util.ArrayList;
 

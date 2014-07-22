@@ -12,7 +12,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
 		android:gravity="center_horizontal"
-        android:numColumns="1"
+        android:numColumns="3"
         android:stretchMode="columnWidth" />
  
 </RelativeLayout>

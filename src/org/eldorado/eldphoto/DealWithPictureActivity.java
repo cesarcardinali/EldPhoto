@@ -1,13 +1,25 @@
 package org.eldorado.eldphoto;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+
+import org.eldorado.eldphoto.support.EffectsFactory;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,16 +40,20 @@ import android.widget.ViewFlipper;
  */
 public class DealWithPictureActivity extends Activity {
 
-	public static final String PICTURE = "org.eldorado.eldphoto.PICTURE";
+	public  static final String PICTURE = "org.eldorado.eldphoto.PICTURE";
 	private byte[] picture; //the picture taken as a byte array
 	private Bitmap image; //the picture taken as a bitmap
 	private static Bitmap currentImage = null; //the image displayed (can be the original or a effect-applied one)
+	
 	private ViewFlipper viewFlipper; //the view which contains the graphical components to show the effects/filters options
+	
 	private float lastX; //the last X position of the screen touch event
-	private static ArrayList<Bitmap> filterImages = new ArrayList(); //the list with the effects/filters thumbnail images
-	private Context context = this;
+	private static ArrayList<Bitmap> filterImages = new ArrayList<Bitmap>(); //the list with the effects/filters thumbnail images
+
 	private EffectsFactory effectsFactory; //the effects factory object
 	private static boolean isThereEffectApplied = false; //whether there is an effect/filter applied to the original image being displayed
+	
+	private Context context = this;
 	
 	public DealWithPictureActivity() {
 		
@@ -72,11 +88,18 @@ public class DealWithPictureActivity extends Activity {
 		
 		//otherwise, if some effect/filter was applied, ...
 		else if(isThereEffectApplied){
-			
 			//makes the undo button visible
 			Button undoButton = (Button) findViewById(R.id.undoButton);
 			undoButton.setVisibility(View.VISIBLE);
 		}
+		
+		Button sendButton = (Button) findViewById(R.id.Button2);		
+		sendButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				storeImage(getApplicationContext(), currentImage);
+			}
+		});
 		
 		//displays the current image
 		ImageView imageView = (ImageView) findViewById(R.id.imageView1);
@@ -85,7 +108,7 @@ public class DealWithPictureActivity extends Activity {
 		
 		//sets the background of the flipper (where will be displayed the effects thumbnails) to be transparent
 		viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper1);
-		viewFlipper.setBackgroundColor(Color.argb(90, 255, 255, 255));
+		viewFlipper.setBackgroundColor(Color.argb(30, 255, 255, 255));
 		
 		//sends the context information to effectsFactory class
 		effectsFactory.setContext(this);
@@ -96,7 +119,6 @@ public class DealWithPictureActivity extends Activity {
 	
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 		picture = null;
 	}
@@ -121,7 +143,6 @@ public class DealWithPictureActivity extends Activity {
                          // If no more View/Child to flip
                         if (viewFlipper.getDisplayedChild() == 0)
                             break;
-                        
                         // set the required Animation type to ViewFlipper
                         // The Next screen will come in from Left and current Screen will go OUT from Right 
                         viewFlipper.setInAnimation(this, R.anim.in_from_left);
@@ -189,9 +210,9 @@ public class DealWithPictureActivity extends Activity {
 					
 					//the image view with the thumbnail with the filter/effect applied
 					ImageView filterView = new ImageView(this);
-					filterView.setAdjustViewBounds(true);
-					filterView.setMaxHeight(200);
-					filterView.setMaxWidth(200);
+					filterView.setAdjustViewBounds(false);
+					filterView.setMaxHeight(150);
+					filterView.setMaxWidth(150);
 
 					//gets the dimensions of the original image
 					int width = image.getWidth();
@@ -201,7 +222,6 @@ public class DealWithPictureActivity extends Activity {
 					//such that the greatest dimension should equal 200 px
 					//if the width is bigger than height, then width should be 200px
 					if(width > height){
-						
 						//sets the height proportionally
 						height = Math.round(height * 200.0f/width);
 						width = 200;
@@ -294,7 +314,7 @@ public class DealWithPictureActivity extends Activity {
 
 					//the image view with the thumbnail with the filter/effect applied
 					ImageView filterView = new ImageView(this);
-					filterView.setAdjustViewBounds(true);
+					filterView.setAdjustViewBounds(false);
 					filterView.setMaxHeight(200);
 					filterView.setMaxWidth(200);
 
@@ -307,10 +327,8 @@ public class DealWithPictureActivity extends Activity {
 
 					//sets the method that will be called when the image view with the thumbnail is clicked
 					layout.setOnClickListener(new OnClickListener() {
-
 						@Override
 						public void onClick(View view) {
-
 							try{
 								//gets the image view with the current image
 								ImageView imageView = (ImageView) findViewById(R.id.imageView1);
@@ -408,5 +426,57 @@ public class DealWithPictureActivity extends Activity {
 	 */
 	public static void removeCurrentImage(){
 		currentImage = null;
+	}
+	
+	//Get a picture file with patch
+	private static File getOutputMediaFile(Context context) {
+		String IMAGE_DIRECTORY_NAME = "Eldphoto";
+		// External sdcard location
+		File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + IMAGE_DIRECTORY_NAME);
+		Toast.makeText(context, "Storeing at " + mediaStorageDir.getAbsolutePath().toString(), Toast.LENGTH_SHORT).show();
+
+		// Create the storage directory if it does not exist
+		if (!mediaStorageDir.exists()) {
+			if (!mediaStorageDir.mkdirs()) {
+				Log.d(IMAGE_DIRECTORY_NAME, "Oops! Failed create "
+						+ IMAGE_DIRECTORY_NAME + " directory");
+				Toast.makeText(context, "Oops! Failed create "
+						+ IMAGE_DIRECTORY_NAME + " directory", Toast.LENGTH_SHORT).show();
+				return null;
+			} else {
+				Log.d(IMAGE_DIRECTORY_NAME, "Directory created");
+				Toast.makeText(context, "Directory created", Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		// Create a media file name
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+		File mediaFile;
+		mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".png");
+		Toast.makeText(context, "File created", Toast.LENGTH_SHORT).show();
+		return mediaFile;
+	}
+	// Saving picture
+	private void storeImage(Context context, Bitmap image) {
+		String IMAGE_DIRECTORY_NAME = "Eldphoto";
+	    File pictureFile = getOutputMediaFile(this.context);
+	    if (pictureFile == null) {
+	        Log.d(IMAGE_DIRECTORY_NAME, "Error creating media file, check storage permissions: ");
+	        Toast.makeText(context, "Error creating media file, check storage permissions: ", Toast.LENGTH_SHORT).show();
+	        return;
+	    } 
+	    try {
+	        FileOutputStream fos = new FileOutputStream(pictureFile);
+	        image.compress(Bitmap.CompressFormat.PNG, 90, fos);
+	        fos.close();
+	    } catch (FileNotFoundException e) {
+	        Log.d(IMAGE_DIRECTORY_NAME, "File not found: " + e.getMessage());
+	        Toast.makeText(context, "File not found: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+	    } catch (IOException e) {
+	        Log.d(IMAGE_DIRECTORY_NAME, "Error accessing file: " + e.getMessage());
+	        Toast.makeText(context, "Error accessing file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+	    } finally {
+	    	
+	    }
 	}
 }

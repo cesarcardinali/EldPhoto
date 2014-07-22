@@ -11,6 +11,7 @@
 
     <ImageView
         android:id="@+id/imageView1"
+        android:contentDescription="@+string/Picture_taken"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
@@ -27,6 +28,7 @@
             android:paddingBottom="10sp"
             android:paddingTop="10sp"
             android:textStyle="bold"
+            android:textColor="#333333"
             android:layout_alignParentTop="true"
             android:text="@string/deal_with_picture_text"
             android:background="#77FFFFFF" />
@@ -40,7 +42,7 @@
             <Button
                 android:id="@+id/Button1"
                 android:layout_width="wrap_content"
-                android:layout_height="60dp"
+                android:layout_height="45dp"
                 android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_action_cancel"
                 android:onClick="cancelPicture"
@@ -50,7 +52,7 @@
             <Button
                 android:id="@+id/Button2"
                 android:layout_width="wrap_content"
-                android:layout_height="60dp"
+                android:layout_height="45dp"
                 android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_action_accept"
                 android:onClick="sendPicture"
