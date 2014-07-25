@@ -1,19 +1,15 @@
 package org.eldorado.eldphoto;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,7 +36,7 @@ public class DealWithPictureActivity extends Activity {
 	private static Bitmap currentImage = null; //the image displayed (can be the original or a effect-applied one)
 	private ViewFlipper viewFlipper; //the view which contains the graphical components to show the effects/filters options
 	private float lastX; //the last X position of the screen touch event
-	private static ArrayList<Bitmap> filterImages = new ArrayList(); //the list with the effects/filters thumbnail images
+	private static ArrayList<Bitmap> filterImages = new ArrayList<Bitmap>(); //the list with the effects/filters thumbnail images
 	private Context context = this;
 	private EffectsFactory effectsFactory; //the effects factory object
 	private static boolean isThereEffectApplied = false; //whether there is an effect/filter applied to the original image being displayed
@@ -395,13 +391,26 @@ public class DealWithPictureActivity extends Activity {
 	 * 
 	 * @param view
 	 */
-	public void sendPicture(View view){}
+	public void sendPicture(View view){
+		 new AsyncTask<Bitmap, Integer, Boolean>() {
+			@Override
+			protected Boolean doInBackground(Bitmap... pictures) {
+				try {
+					FileUploadTask.get().SavePictureToUpload(pictures[0]);
+				} catch (FileUploadException e) {
+					Log.e(DealWithPictureActivity.class.getName(), "Can save the picture file", e);
+					return false;
+				}
+				return true;
+			}
+		}.execute(currentImage);
+		startActivity(new Intent(this, CamActivity.class));
+	}
 	
 	/** Removes all filter images previously computed.
 	 * 
 	 */
 	public static void removeFilterImages(){
-		
 		filterImages.clear();
 	}
 	
@@ -411,4 +420,5 @@ public class DealWithPictureActivity extends Activity {
 	public static void removeCurrentImage(){
 		currentImage = null;
 	}
+	
 }
