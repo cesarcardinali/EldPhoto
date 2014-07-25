@@ -395,8 +395,9 @@ public class DealWithPictureActivity extends Activity {
 		 new AsyncTask<Bitmap, Integer, Boolean>() {
 			@Override
 			protected Boolean doInBackground(Bitmap... pictures) {
-				try {
-					FileUploadTask.get().SavePictureToUpload(pictures[0]);
+				try {					
+					FileManager.SavePictureToUpload(pictures[0]);
+					startService(new Intent(getApplicationContext(), FileUploadService.class));
 				} catch (FileUploadException e) {
 					Log.e(DealWithPictureActivity.class.getName(), "Can save the picture file", e);
 					return false;
