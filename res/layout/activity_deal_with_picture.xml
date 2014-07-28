@@ -1,94 +1,90 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/FrameLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:overScrollMode="always"
     android:background="@drawable/login_backgroud"
+    android:overScrollMode="always"
     android:scrollbarStyle="insideOverlay"
     android:scrollbars="horizontal|vertical"
+    android:padding="5sp"
     tools:context="${packageName}.${activityClass}" >
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:contentDescription="@+string/Picture_taken"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
-    
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/topLayout"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:gravity="top"
+        android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/text_choosing_filters"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="10sp"
             android:paddingTop="10sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:layout_alignParentTop="true"
             android:text="@string/deal_with_picture_text"
-            android:background="#77FFFFFF" />
+            android:textColor="#333333"
+            android:textStyle="bold" />
 
-        <LinearLayout
+        <Button
+            android:id="@+id/Button1"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_margin="0sp"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/ic_action_cancel"
+            android:drawablePadding="1sp"
+            android:onClick="cancelPicture"
+            android:padding="0sp"
+            android:text="@string/cancelButton" />
+
+        <Button
+            android:id="@+id/Button2"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/ic_action_accept"
+            android:drawablePadding="1sp"
+            android:onClick="sendPicture"
+            android:text="@string/sendButton" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/topLayout"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@+string/Picture_taken"
+        android:padding="3sp" />
+
+    <LinearLayout
+        android:id="@+id/filterLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center|end"
+        android:background="#BBFFFFFF"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/undoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:onClick="undoFilter"
+            android:text="@string/undoFilterButton"
+            android:visibility="visible" />
+
+        <ViewFlipper
+            android:id="@+id/viewFlipper1"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/text_choosing_filters"
-            android:gravity="top" >
+            android:layout_height="fill_parent"
+            android:animateFirstView="true" >
+        </ViewFlipper>
+    </LinearLayout>
 
-            <Button
-                android:id="@+id/Button1"
-                android:layout_width="wrap_content"
-                android:layout_height="45dp"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/ic_action_cancel"
-                android:onClick="cancelPicture"
-                android:text="@string/cancelButton"
-                android:alpha="1.0" />
-
-            <Button
-                android:id="@+id/Button2"
-                android:layout_width="wrap_content"
-                android:layout_height="45dp"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/ic_action_accept"
-                android:onClick="sendPicture"
-                android:text="@string/sendButton"
-                android:alpha="1.0" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/filterLayout"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:gravity="center|end"
-            android:orientation="vertical" >
-
-            <Button
-                android:id="@+id/undoButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                android:visibility="invisible"
-                android:gravity="center_horizontal"
-                android:onClick="undoFilter"
-                android:textStyle="bold"
-                android:text="@string/undoFilterButton" />
-
-            <ViewFlipper
-                android:id="@+id/viewFlipper1"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="#77FFFFFF"
-                android:animateFirstView="true">
-                
-
-            </ViewFlipper>
-        </LinearLayout>
-    </RelativeLayout>
-
-</FrameLayout>
+</RelativeLayout>

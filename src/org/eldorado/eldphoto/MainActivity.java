@@ -1,22 +1,13 @@
 package org.eldorado.eldphoto;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import android.os.Environment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -34,7 +25,6 @@ public class MainActivity extends Activity {
 	static Context context;
 	
 	private Uri fileUri;
-	private Bitmap bitmap;
 	
 	private Button btnUploadPicture;
 	private Button btnCapturePicture;
@@ -130,12 +120,7 @@ public class MainActivity extends Activity {
 		if (requestCode == SELECT_IMAGE_REQUEST_CODE) {
 			if (resultCode == RESULT_OK) {
 				// successfully captured the image
-				// display it in image view
-				/*bitmap = BitmapFactory.decodeFile(tempFile.getAbsolutePath());
-				EldPhotoApplication.setBitmap(bitmap);
-				
-				storeImage(bitmap);*/
-				
+				// display it in image view				
 				Intent dealWithPictureIntent = new Intent();
 				dealWithPictureIntent.setClassName(PACKAGE_NAME, PACKAGE_NAME + ".DealWithPictureActivity");
 				
@@ -154,59 +139,5 @@ public class MainActivity extends Activity {
 			}
 
 		}
-	}
-	/**
-	 * ------------ Helper Methods ----------------------
-	 * */
-	//Get a picture file with patch
-	private static File getOutputMediaFile(int type) {
-
-		// External sdcard location
-		File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DIRECTORY_NAME);
-
-		// Create the storage directory if it does not exist
-		if (!mediaStorageDir.exists()) {
-			if (!mediaStorageDir.mkdirs()) {
-				Log.d(IMAGE_DIRECTORY_NAME, "Oops! Failed create "
-						+ IMAGE_DIRECTORY_NAME + " directory");
-				Toast.makeText(context, "Oops! Failed create "
-						+ IMAGE_DIRECTORY_NAME + " directory", Toast.LENGTH_SHORT).show();
-				return null;
-			} else {
-				Log.d(IMAGE_DIRECTORY_NAME, "Directory created");
-				Toast.makeText(context, "Directory created", Toast.LENGTH_SHORT).show();
-			}
-		}
-
-		// Create a media file name
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-		File mediaFile;
-		
-		if (type == MEDIA_TYPE_IMAGE) {
-			mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".png");
-		} else {
-			return null;
-		}
-		return mediaFile;
-	}
-	// Saving picture
-	private void storeImage(Bitmap image) {
-	    File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
-	    if (pictureFile == null) {
-	        Log.d(IMAGE_DIRECTORY_NAME, "Error creating media file, check storage permissions: ");
-	        Toast.makeText(context, "Error creating media file, check storage permissions: ", Toast.LENGTH_SHORT).show();
-	        return;
-	    } 
-	    try {
-	        FileOutputStream fos = new FileOutputStream(pictureFile);
-	        image.compress(Bitmap.CompressFormat.PNG, 90, fos);
-	        fos.close();
-	    } catch (FileNotFoundException e) {
-	        Log.d(IMAGE_DIRECTORY_NAME, "File not found: " + e.getMessage());
-	        Toast.makeText(context, "File not found: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-	    } catch (IOException e) {
-	        Log.d(IMAGE_DIRECTORY_NAME, "Error accessing file: " + e.getMessage());
-	        Toast.makeText(context, "Error accessing file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-	    }  
 	}
 }

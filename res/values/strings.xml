@@ -14,8 +14,8 @@
     <string name="ACTION_CAM">org.eldorado.eldphoto.CAM</string>
     <string name="ACTION_DEAL_WITH_PICTURE">org.eldorado.eldphoto.DEAL_WITH_PICTURE</string>
     <string name="text_choosing_filters">Choose a filter:</string>
-    <string name="deal_with_picture_text">Choose what you want to do next:</string>
-    <string name="cancelButton">Cancel</string>
+    <string name="deal_with_picture_text">What now? </string>
+    <string name="cancelButton">Discard</string>
     <string name="sendButton">Send</string>
     <string name="undoFilterButton">Undo</string>
     <string name="text_filter1">filter 1</string>

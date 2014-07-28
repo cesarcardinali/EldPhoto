@@ -29,12 +29,11 @@ public class ShowPicsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_pics);
 		
-		if (!Environment.getExternalStorageState().equals(
-	            Environment.MEDIA_MOUNTED)) {
+		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 	        Toast.makeText(this, "Error! No SDCARD Found!", Toast.LENGTH_LONG).show();
 	    } else {
 	        // Locate the image folder in your SD Card
-	        file = new File(Environment.getExternalStorageDirectory() + File.separator + "Eldphoto");
+	        file = new File(Environment.getExternalStorageDirectory() + File.separator + "Eldphoto/Thumbnails");
 	        // Create a new folder if no folder named SDImageTutorial exist
 	        file.mkdirs();
 	    }

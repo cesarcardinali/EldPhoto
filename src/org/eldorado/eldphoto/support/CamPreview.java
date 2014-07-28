@@ -19,6 +19,7 @@ public class CamPreview extends SurfaceView implements SurfaceHolder.Callback{
 	private SurfaceHolder holder;
 	private Camera cam = null;
 	private int cam_id;
+	Camera.Parameters parameters;
 	
 	/**
 	 * Creates a new Camera Preview object with the given context, camera
@@ -29,6 +30,8 @@ public class CamPreview extends SurfaceView implements SurfaceHolder.Callback{
 	public CamPreview(Context context) {
 		
 		super(context); //calls for the super class constructor
+		
+		parameters = cam.getParameters();
 		
 		holder = getHolder(); //gets a Surface Holder
 		holder.addCallback(this); //assigns this object to answer the call backs
@@ -112,8 +115,17 @@ public class CamPreview extends SurfaceView implements SurfaceHolder.Callback{
 //		catch(Exception e){}
 	}
 	
-	public Camera getCam(){ return this.cam;}
-	public int getCamID(){ return this.cam_id;}
+	public Camera getCam() {
+		return this.cam;
+	}
+
+	public int getCamID() {
+		return this.cam_id;
+	}
+
+	public Camera.Parameters getParameters() {
+		return parameters;
+	}
 	
 	
 	public void switchCamera(){

@@ -11,22 +11,22 @@ import java.util.Locale;
 
 import org.eldorado.eldphoto.support.EffectsFactory;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.Matrix;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -69,16 +69,20 @@ public class DealWithPictureActivity extends Activity {
 		//retrieves the picture data from the intent
 		if (EldPhotoApplication.hasBitmap() == true) {
 			image = EldPhotoApplication.getBitmap();
+			Matrix matrix = new Matrix();
+			matrix.postRotate(90);
+			image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
 		}
 		else {
 			picture = EldPhotoApplication.getPicture();
-			
 			BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inPurgeable = true; //allows the system to reclaim memory
 			options.inInputShareable = true; //keeps a shallow reference to the data
-
 			//converts the byte array into bitmap
 			image = BitmapFactory.decodeByteArray(picture, 0, picture.length, options);
+			Matrix matrix = new Matrix();
+			matrix.postRotate(90);
+			image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
 		}
 		
 		//if this is the first time the activity is created for that picture, ...
@@ -108,10 +112,9 @@ public class DealWithPictureActivity extends Activity {
 		
 		//sets the background of the flipper (where will be displayed the effects thumbnails) to be transparent
 		viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper1);
-		viewFlipper.setBackgroundColor(Color.argb(30, 255, 255, 255));
 		
 		//sends the context information to effectsFactory class
-		effectsFactory.setContext(this);
+		effectsFactory.setContext(context);
 		
 		//displays the filters/effects options, when available
 		showFilters();
@@ -123,51 +126,6 @@ public class DealWithPictureActivity extends Activity {
 		picture = null;
 	}
 	
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		switch (event.getAction())
-        {
-               // when user first touches the screen to swap
-                case MotionEvent.ACTION_DOWN: 
-                {
-                    lastX = event.getX();
-                    break;
-               }
-                case MotionEvent.ACTION_UP: 
-                {
-                    float currentX = event.getX();
-                    
-                    // if left to right swipe on screen
-                    if (lastX < currentX) 
-                    {
-                         // If no more View/Child to flip
-                        if (viewFlipper.getDisplayedChild() == 0)
-                            break;
-                        // set the required Animation type to ViewFlipper
-                        // The Next screen will come in from Left and current Screen will go OUT from Right 
-                        viewFlipper.setInAnimation(this, R.anim.in_from_left);
-                        viewFlipper.setOutAnimation(this, R.anim.out_to_right);
-                        // Show the previous Screen
-                        viewFlipper.showPrevious();
-                    }
-                    
-                    // if right to left swipe on screen
-                    if (lastX > currentX)
-                    {
-                        if (viewFlipper.getDisplayedChild() == viewFlipper.getChildCount() - 1)
-                            break;
-                        // set the required Animation type to ViewFlipper
-                        // The Next screen will come in from Right and current Screen will go OUT from Left 
-                        viewFlipper.setInAnimation(this, R.anim.in_from_right);
-                        viewFlipper.setOutAnimation(this, R.anim.out_to_left);
-                        // Show The Next Screen
-                        viewFlipper.showNext();
-                    }
-                    break;
-                }
-        }
-        return false;
-	}
 	
 	/** Shows the effects/filters implementation available.
 	 * It calls the implementation and apply them on thumbnails.
@@ -175,14 +133,13 @@ public class DealWithPictureActivity extends Activity {
 	 * the thumbnails are saved into a list so the next times, they will only
 	 * be displayed.
 	 */
+	@SuppressLint("NewApi")
 	public void showFilters(){
-		
 		try{
 			//checks for the available filters/effects (this must be called before 'getNumberOfEffectsAvailable()' method)
 			EffectsFactory.getAvailableEffects();
 		}
 		catch(Exception ex){
-			
 			//if there was a problem, display its message
 			Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
 			//prints its stack trace for debugging
@@ -197,40 +154,38 @@ public class DealWithPictureActivity extends Activity {
 			for(int id = 0; id < EffectsFactory.getNumberOfEffectsAvailable(); id++){
 
 				try{
-					//creates the graphical components to display the thumbnails 
-					//the layout
+					//creates the graphical components to display the thumbnails the layout
 					LinearLayout layout = new LinearLayout(this);
 					layout.setOrientation(LinearLayout.VERTICAL);
 					layout.setGravity(Gravity.CENTER);
+					LinearLayout.LayoutParams params = (LayoutParams) layout.getLayoutParams();
 					
 					//the text view with the filter/effect's name
-					TextView textView = new TextView(this);
+					TextView textView = new TextView(context);
 					textView.setText(effectsFactory.getEffect(id).getName());
 					textView.setGravity(Gravity.CENTER);
 					
 					//the image view with the thumbnail with the filter/effect applied
-					ImageView filterView = new ImageView(this);
+					ImageView filterView = new ImageView(context);
 					filterView.setAdjustViewBounds(false);
-					filterView.setMaxHeight(150);
-					filterView.setMaxWidth(150);
+					filterView.setMaxHeight(80);
+					filterView.setMaxWidth(80);
 
 					//gets the dimensions of the original image
 					int width = image.getWidth();
 					int height = image.getHeight();
 
 					//computes the dimensions of the thumbnail according to the dimensions of the original image
-					//such that the greatest dimension should equal 200 px
-					//if the width is bigger than height, then width should be 200px
 					if(width > height){
 						//sets the height proportionally
-						height = Math.round(height * 200.0f/width);
-						width = 200;
+						height = Math.round(height * 100.0f/width);
+						width = 100;
 					}
 					//else, the height should be 200px
 					else{
 						//sets the width proportionally
-						width = Math.round(width * 200.0f/height);
-						height = 200;
+						width = Math.round(width * 100.0f/height);
+						height = 100;
 					}
 					
 					//adds into the list 'filterImages' the thumbnail with the filter/effect applied and with he computed dimensions
@@ -241,52 +196,93 @@ public class DealWithPictureActivity extends Activity {
 
 					layout.addView(textView); //puts the text view inside the layout
 					layout.addView(filterView); //puts the image view inside the layout
-					viewFlipper.addView(layout); //puts the layout inside the flipper view
-
+					
 					//sets the method that will be called when the image view with the thumbnail is clicked
-					layout.setOnClickListener(new OnClickListener() {
-
+					layout.setOnTouchListener(new View.OnTouchListener() {					
 						@Override
-						public void onClick(View view) {
-
-							try{
-								//gets the image view with the current image
-								ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-
-								//gets the name of the clicked filter/effect thumbnail
-								LinearLayout layout = (LinearLayout) view;
-								TextView text = (TextView) layout.getChildAt(0);
-								String str = (String) text.getText();
-								int id = 0;
-
-								//gets the id corresponding to such filter/effect
-								for(int i = 0; i < EffectsFactory.getNumberOfEffectsAvailable(); i++)
-									if(str.compareTo(effectsFactory.getEffect(i).getName()) == 0){
-										id = i;
-										break;
+						public boolean onTouch(View v, MotionEvent event) {
+							switch (event.getAction())
+					        {
+				                // when user first touches the screen to swap
+				                case MotionEvent.ACTION_DOWN: 
+				                {
+				                    lastX = event.getX();
+				                    break;
+				                }
+				                case MotionEvent.ACTION_UP: 
+				                {
+				                    float currentX = event.getX();
+				                    // if left to right swipe on screen
+				                    if (lastX < currentX) 
+				                    {
+				                        // If no more View/Child to flip
+				                        if (viewFlipper.getDisplayedChild() == 0)
+				                            break;
+				                        // set the required Animation type to ViewFlipper
+				                        // The Next screen will come in from Left and current Screen will go OUT from Right 
+				                        viewFlipper.setInAnimation(context, R.anim.in_from_left);
+				                        viewFlipper.setOutAnimation(context, R.anim.out_to_right);
+				                        // Show the previous Screen
+				                        viewFlipper.showPrevious();
+				                    }
+				                    
+				                    // if right to left swipe on screen
+				                    if (lastX > currentX)
+				                    {
+				                        if (viewFlipper.getDisplayedChild() == viewFlipper.getChildCount() - 1)
+				                            break;
+				                        // set the required Animation type to ViewFlipper
+				                        // The Next screen will come in from Right and current Screen will go OUT from Left 
+				                        viewFlipper.setInAnimation(context, R.anim.in_from_right);
+				                        viewFlipper.setOutAnimation(context, R.anim.out_to_left);
+				                        // Show The Next Screen
+				                        viewFlipper.showNext();
+				                    }
+				                    if(currentX < lastX+5 && currentX > lastX-5){
+										try{
+											//gets the image view with the current image
+											ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+											//gets the name of the clicked filter/effect thumbnail
+											LinearLayout layout = (LinearLayout) v;
+											TextView text = (TextView) layout.getChildAt(0);
+											String str = (String) text.getText();
+											int id = 0;
+	
+											//gets the id corresponding to such filter/effect
+											for(int i = 0; i < EffectsFactory.getNumberOfEffectsAvailable(); i++)
+											{
+												if(str.compareTo(effectsFactory.getEffect(i).getName()) == 0){
+													id = i;
+													break;
+												}
+											}
+											//applies the filter/effect to the original image and makes it the current one
+											currentImage = effectsFactory.getEffect(id).applyEffect(
+													Bitmap.createScaledBitmap(image, imageView.getWidth(), imageView.getHeight(), false));
+	
+											//displays the new image with the filter/effect applied
+											imageView.setImageBitmap(currentImage);
+	
+											//makes the undo button visible
+											Button undoButton = (Button) findViewById(R.id.undoButton);
+											undoButton.setVisibility(View.VISIBLE);
+											
+											//signalizes that an effect/filter was applied
+											isThereEffectApplied = true;
+										}
+										catch(Exception ex){
+	
+											//if something goes wrong, displays the error message
+											Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
+										}
 									}
-
-								//applies the filter/effect to the original image and makes it the current one
-								currentImage = effectsFactory.getEffect(id).applyEffect(
-										Bitmap.createScaledBitmap(image, imageView.getWidth(), imageView.getHeight(), false));
-
-								//displays the new image with the filter/effect applied
-								imageView.setImageBitmap(currentImage);
-
-								//makes the undo button visible
-								Button undoButton = (Button) findViewById(R.id.undoButton);
-								undoButton.setVisibility(View.VISIBLE);
-								
-								//signalizes that an effect/filter was applied
-								isThereEffectApplied = true;
-							}
-							catch(Exception ex){
-
-								//if something goes wrong, displays the error message
-								Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
-							}
+				                    break;
+				                }
+					        }
+							return true;
 						}
 					});
+					viewFlipper.addView(layout); //puts the layout inside the flipper view
 				}
 				catch(Exception ex){
 					//if something goes wrong, displays the error message
@@ -296,10 +292,8 @@ public class DealWithPictureActivity extends Activity {
 		}
 		//else, if this isn't the first time we compute the thumbnails for the filters/effects for that picture...
 		else{
-			
 			//for each of the available filters/effects, ...
 			for(int id = 0; id < EffectsFactory.getNumberOfEffectsAvailable(); id++){
-
 				try{
 					//creates the graphical components to display the thumbnails 
 					//the layout
@@ -315,58 +309,100 @@ public class DealWithPictureActivity extends Activity {
 					//the image view with the thumbnail with the filter/effect applied
 					ImageView filterView = new ImageView(this);
 					filterView.setAdjustViewBounds(false);
-					filterView.setMaxHeight(200);
-					filterView.setMaxWidth(200);
+					filterView.setMaxHeight(80);
+					filterView.setMaxWidth(80);
 
 					//sets the image view's image bitmap to the thumbnail
 					filterView.setImageBitmap(filterImages.get(id));
 
 					layout.addView(textView); //puts the text view inside the layout
 					layout.addView(filterView); //puts the image view inside the layout
-					viewFlipper.addView(layout); //puts the layout inside the flipper view
-
 					//sets the method that will be called when the image view with the thumbnail is clicked
-					layout.setOnClickListener(new OnClickListener() {
+					layout.setOnTouchListener(new View.OnTouchListener() {					
 						@Override
-						public void onClick(View view) {
-							try{
-								//gets the image view with the current image
-								ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-
-								//gets the name of the clicked filter/effect thumbnail
-								LinearLayout layout = (LinearLayout) view;
-								TextView text = (TextView) layout.getChildAt(0);
-								String str = (String) text.getText();
-								int id = 0;
-
-								//gets the id corresponding to such filter/effect
-								for(int i = 0; i < EffectsFactory.getNumberOfEffectsAvailable(); i++)
-									if(str.compareTo(effectsFactory.getEffect(i).getName()) == 0){
-										id = i;
-										break;
+						public boolean onTouch(View v, MotionEvent event) {
+							switch (event.getAction())
+					        {
+				                // when user first touches the screen to swap
+				                case MotionEvent.ACTION_DOWN: 
+				                {
+				                    lastX = event.getX();
+				                    break;
+				                }
+				                case MotionEvent.ACTION_UP: 
+				                {
+				                    float currentX = event.getX();
+				                    // if left to right swipe on screen
+				                    if (lastX < currentX) 
+				                    {
+				                        // If no more View/Child to flip
+				                        if (viewFlipper.getDisplayedChild() == 0)
+				                            break;
+				                        // set the required Animation type to ViewFlipper
+				                        // The Next screen will come in from Left and current Screen will go OUT from Right 
+				                        viewFlipper.setInAnimation(context, R.anim.in_from_left);
+				                        viewFlipper.setOutAnimation(context, R.anim.out_to_right);
+				                        // Show the previous Screen
+				                        viewFlipper.showPrevious();
+				                    }
+				                    
+				                    // if right to left swipe on screen
+				                    if (lastX > currentX)
+				                    {
+				                        if (viewFlipper.getDisplayedChild() == viewFlipper.getChildCount() - 1)
+				                            break;
+				                        // set the required Animation type to ViewFlipper
+				                        // The Next screen will come in from Right and current Screen will go OUT from Left 
+				                        viewFlipper.setInAnimation(context, R.anim.in_from_right);
+				                        viewFlipper.setOutAnimation(context, R.anim.out_to_left);
+				                        // Show The Next Screen
+				                        viewFlipper.showNext();
+				                    }
+				                    if(currentX < lastX+5 && currentX > lastX-5){
+										try{
+											//gets the image view with the current image
+											ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+											//gets the name of the clicked filter/effect thumbnail
+											LinearLayout layout = (LinearLayout) v;
+											TextView text = (TextView) layout.getChildAt(0);
+											String str = (String) text.getText();
+											int id = 0;
+	
+											//gets the id corresponding to such filter/effect
+											for(int i = 0; i < EffectsFactory.getNumberOfEffectsAvailable(); i++)
+											{
+												if(str.compareTo(effectsFactory.getEffect(i).getName()) == 0){
+													id = i;
+													break;
+												}
+											}
+											//applies the filter/effect to the original image and makes it the current one
+											currentImage = effectsFactory.getEffect(id).applyEffect(
+													Bitmap.createScaledBitmap(image, currentImage.getWidth(), currentImage.getHeight(), false));
+	
+											//displays the new image with the filter/effect applied
+											imageView.setImageBitmap(currentImage);
+	
+											//makes the undo button visible
+											Button undoButton = (Button) findViewById(R.id.undoButton);
+											undoButton.setVisibility(View.VISIBLE);
+											
+											//signalizes that an effect/filter was applied
+											isThereEffectApplied = true;
+										}
+										catch(Exception ex){
+	
+											//if something goes wrong, displays the error message
+											Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
+										}
 									}
-
-								//applies the filter/effect to the original image and makes it the current one
-								currentImage = effectsFactory.getEffect(id).applyEffect(
-										Bitmap.createScaledBitmap(image, imageView.getWidth(), imageView.getHeight(), false));
-
-								//displays the new image with the filter/effect applied
-								imageView.setImageBitmap(currentImage);
-
-								//makes the undo button visible
-								Button undoButton = (Button) findViewById(R.id.undoButton);
-								undoButton.setVisibility(View.VISIBLE);
-								
-								//signalizes that an effect/filter was applied
-								isThereEffectApplied = true;
-							}
-							catch(Exception ex){
-
-								//if something goes wrong, displays the error message
-								Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
-							}
+				                    break;
+				                }
+					        }
+							return true;
 						}
 					});
+					viewFlipper.addView(layout); //puts the layout inside the flipper view
 				}
 				catch(Exception ex){
 					//if something goes wrong, displays the error message
@@ -429,51 +465,56 @@ public class DealWithPictureActivity extends Activity {
 	}
 	
 	//Get a picture file with patch
-	private static File getOutputMediaFile(Context context) {
+	private static File getOutputMediaFile(Context context, int Type) {
 		String IMAGE_DIRECTORY_NAME = "Eldphoto";
-		// External sdcard location
-		File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + IMAGE_DIRECTORY_NAME);
-		Toast.makeText(context, "Storeing at " + mediaStorageDir.getAbsolutePath().toString(), Toast.LENGTH_SHORT).show();
-
+		String THUMBNAIL_DIRECTORY_NAME = "Eldphoto/Thumbnails";
+		File mediaStorageDir = null;
+		// External sdcard location (Fails, it detects the internal memory)
+		if (Type == 1)
+			mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + IMAGE_DIRECTORY_NAME);
+		if (Type == 2) 
+			mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + THUMBNAIL_DIRECTORY_NAME);
 		// Create the storage directory if it does not exist
 		if (!mediaStorageDir.exists()) {
 			if (!mediaStorageDir.mkdirs()) {
-				Log.d(IMAGE_DIRECTORY_NAME, "Oops! Failed create "
-						+ IMAGE_DIRECTORY_NAME + " directory");
-				Toast.makeText(context, "Oops! Failed create "
-						+ IMAGE_DIRECTORY_NAME + " directory", Toast.LENGTH_SHORT).show();
+				//Log.d(IMAGE_DIRECTORY_NAME, "Oops! Failed create " + IMAGE_DIRECTORY_NAME + " directory");
+				Toast.makeText(context, "Oops! Failed create " + IMAGE_DIRECTORY_NAME + " directory", Toast.LENGTH_SHORT).show();
 				return null;
 			} else {
-				Log.d(IMAGE_DIRECTORY_NAME, "Directory created");
+				//Log.d(IMAGE_DIRECTORY_NAME, "Directory created");
 				Toast.makeText(context, "Directory created", Toast.LENGTH_SHORT).show();
 			}
 		}
-
 		// Create a media file name
-		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+		String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault()).format(new Date());
 		File mediaFile;
 		mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".png");
-		Toast.makeText(context, "File created", Toast.LENGTH_SHORT).show();
 		return mediaFile;
 	}
+	
 	// Saving picture
 	private void storeImage(Context context, Bitmap image) {
-		String IMAGE_DIRECTORY_NAME = "Eldphoto";
-	    File pictureFile = getOutputMediaFile(this.context);
+		File pictureFile = getOutputMediaFile(this.context, 1);
+		File thumbnailFile = getOutputMediaFile(this.context, 2);
 	    if (pictureFile == null) {
-	        Log.d(IMAGE_DIRECTORY_NAME, "Error creating media file, check storage permissions: ");
+	        //Log.d(IMAGE_DIRECTORY_NAME, "Error creating media file, check storage permissions: ");
 	        Toast.makeText(context, "Error creating media file, check storage permissions: ", Toast.LENGTH_SHORT).show();
 	        return;
-	    } 
+	    }
 	    try {
-	        FileOutputStream fos = new FileOutputStream(pictureFile);
-	        image.compress(Bitmap.CompressFormat.PNG, 90, fos);
-	        fos.close();
+	    	FileOutputStream fos1 = new FileOutputStream(pictureFile);
+	    	FileOutputStream fos2 = new FileOutputStream(thumbnailFile);
+	        image.compress(Bitmap.CompressFormat.PNG, 0, fos1);
+	        Bitmap aux = ThumbnailUtils.extractThumbnail(image, 80, 80);
+	        fos1.close();
+	        aux.compress(Bitmap.CompressFormat.PNG, 0, fos2);
+	        fos2.close();
+	        Toast.makeText(context, "Media stored and Thumbnail created", Toast.LENGTH_SHORT).show();
 	    } catch (FileNotFoundException e) {
-	        Log.d(IMAGE_DIRECTORY_NAME, "File not found: " + e.getMessage());
+	        //Log.d(IMAGE_DIRECTORY_NAME, "File not found: " + e.getMessage());
 	        Toast.makeText(context, "File not found: " + e.getMessage(), Toast.LENGTH_SHORT).show();
 	    } catch (IOException e) {
-	        Log.d(IMAGE_DIRECTORY_NAME, "Error accessing file: " + e.getMessage());
+	        //Log.d(IMAGE_DIRECTORY_NAME, "Error accessing file: " + e.getMessage());
 	        Toast.makeText(context, "Error accessing file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
 	    } finally {
 	    	

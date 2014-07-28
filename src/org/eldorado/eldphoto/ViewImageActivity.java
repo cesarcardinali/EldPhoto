@@ -41,7 +41,7 @@ public class ViewImageActivity extends Activity {
 		imageview = (ImageView) findViewById(R.id.full_image_view);
 
 		// Decode the filepath with BitmapFactory followed by the position
-		Bitmap bmp = BitmapFactory.decodeFile(filepath[position]);
+		Bitmap bmp = BitmapFactory.decodeFile(filepath[position].replace("/Thumbnails", ""));
 
 		// Set the decoded bitmap into ImageView
 		imageview.setImageBitmap(bmp);
