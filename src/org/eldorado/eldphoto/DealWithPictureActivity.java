@@ -65,12 +65,33 @@ public class DealWithPictureActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_deal_with_picture);
+		int orientation = 90;
+		
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) {
+		    orientation = extras.getInt("orientation");
+		    
+		    if(orientation >= 315 || orientation < 45){
+		    	orientation = 0;
+			}
+			else if(orientation >= 45 && orientation < 135){
+				orientation = 90;
+			}
+			else if(orientation >= 135 && orientation < 225){
+				orientation = 180;
+			}
+			else if(orientation >= 225 && orientation < 315){
+				orientation = 270;
+			}
+		    
+		    Toast.makeText(this, "orientation: " + orientation, Toast.LENGTH_LONG).show();		    
+		}
 
 		//retrieves the picture data from the intent
 		if (EldPhotoApplication.hasBitmap() == true) {
 			image = EldPhotoApplication.getBitmap();
 			Matrix matrix = new Matrix();
-			matrix.postRotate(90);
+			matrix.postRotate(orientation);
 			image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
 		}
 		else {
@@ -81,7 +102,7 @@ public class DealWithPictureActivity extends Activity {
 			//converts the byte array into bitmap
 			image = BitmapFactory.decodeByteArray(picture, 0, picture.length, options);
 			Matrix matrix = new Matrix();
-			matrix.postRotate(90);
+			matrix.postRotate(orientation);
 			image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
 		}
 		

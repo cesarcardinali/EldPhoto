@@ -71,6 +71,7 @@ public class CamOps {
 		Camera.getCameraInfo(cameraId, info);
 		
 		int result = 90;
+		
 		//gets the orientation of the activity
 		int orientation = activity.getRotation();
 
@@ -115,12 +116,12 @@ public class CamOps {
 
 			//checks the list from the beginning
 			for(int i = 0; i < picSizes.size(); i++){
-
+				
 				int picRatio = 100*picSizes.get(i).width/picSizes.get(i).height;
 
 				//if the picture has the same ratio as the preview display, and both dimensions are smaller than 2048, choose this size
 				if(ratio == picRatio && picSizes.get(i).width <= 2048 && picSizes.get(i).height <= 2048){
-
+					
 					params.setPictureSize(picSizes.get(i).width, picSizes.get(i).height);
 					break;
 				}

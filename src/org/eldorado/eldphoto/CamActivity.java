@@ -38,7 +38,7 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 	//private TextView textView;
 	private OrientationEventListener orientationListener;
 	//private OnItemClickListener clickListener;
-	private int rotation, aux = 0;
+	private int rotation;
 	private float lastX;
 	int width, height;
 	Context context;
@@ -60,6 +60,7 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 				preview = new CamPreview(this);
 			
 			final FrameLayout frame = (FrameLayout) findViewById(R.id.camera_preview);
+			CamOps.setPictureOrientation(this, preview.getCamID(),preview.getCam());
 			frame.addView(preview);
 			//Fixing screen proportion
 			new Handler().postDelayed(new Runnable() {
@@ -67,8 +68,9 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 		        public void run() {
 		        	int width = frame.getWidth();
 					int height = frame.getHeight();
+					Camera.Parameters params = preview.getCam().getParameters();
 					Toast.makeText(context, "1" + height + "" + width, Toast.LENGTH_SHORT).show();
-					int newHeight = width*4/3;
+					int newHeight = width * params.getPreviewSize().width/params.getPreviewSize().height;
 					int pad = height - newHeight;
 					Toast.makeText(context, "2" + height + "" + width, Toast.LENGTH_SHORT).show();
 					frame.setPadding(0, pad/2, 0, pad/2);
@@ -112,7 +114,8 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 			float currentX = event.getX();
 			// if left to right swipe on screen
 			if (lastX < currentX - 50) {
-				//For now, do nothing
+				
+				Toast.makeText(context, this.getRotation(), Toast.LENGTH_SHORT).show();preview.getHeight();
 			} else if (lastX > currentX + 50) {
 				preview.switchCamera();
 			}
@@ -130,6 +133,7 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 							if (data != null) {
 								Intent dealWithPictureIntent = new Intent();
 								dealWithPictureIntent.setClassName(PACKAGE_NAME,PACKAGE_NAME + ".DealWithPictureActivity");
+								dealWithPictureIntent.putExtra("orientation", rotation);
 								EldPhotoApplication.setPicture(data); // sends the picture data to the application class
 								startActivity(dealWithPictureIntent);
 							}
@@ -138,7 +142,7 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 				} catch (Exception e) {
 					e.printStackTrace();
 				} finally {
-					// orientationListener.disable();
+					orientationListener.disable();
 				}
 			}
 		}
