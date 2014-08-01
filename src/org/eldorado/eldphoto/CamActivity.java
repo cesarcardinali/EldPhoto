@@ -6,18 +6,15 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Display;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.Toast;
-import android.widget.LinearLayout.LayoutParams;
 
 
 /** This class is the activity which shows the camera preview.
@@ -60,7 +57,7 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 				preview = new CamPreview(this);
 			
 			final FrameLayout frame = (FrameLayout) findViewById(R.id.camera_preview);
-			CamOps.setPictureOrientation(this, preview.getCamID(),preview.getCam());
+			//CamOps.setPictureOrientation(this, preview.getCamID(),preview.getCam());
 			frame.addView(preview);
 			//Fixing screen proportion
 			new Handler().postDelayed(new Runnable() {
@@ -69,13 +66,13 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 		        	int width = frame.getWidth();
 					int height = frame.getHeight();
 					Camera.Parameters params = preview.getCam().getParameters();
-					Toast.makeText(context, "1" + height + "" + width, Toast.LENGTH_SHORT).show();
+					//Toast.makeText(context, "1" + height + "" + width, Toast.LENGTH_SHORT).show();
 					int newHeight = width * params.getPreviewSize().width/params.getPreviewSize().height;
 					int pad = height - newHeight;
-					Toast.makeText(context, "2" + height + "" + width, Toast.LENGTH_SHORT).show();
+					//Toast.makeText(context, "2" + height + "" + width, Toast.LENGTH_SHORT).show();
 					frame.setPadding(0, pad/2, 0, pad/2);
 		        }
-		    },50);
+		    },30);
 			
 
 			/*listView = (ListView) findViewById(R.id.listView);
@@ -114,19 +111,35 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 			float currentX = event.getX();
 			// if left to right swipe on screen
 			if (lastX < currentX - 50) {
-				
-				Toast.makeText(context, this.getRotation(), Toast.LENGTH_SHORT).show();preview.getHeight();
+				Toast.makeText(context, "Orientation Prev: " + rotation, Toast.LENGTH_LONG).show();
+				CamOps.setPictureSize(preview.getCam());
 			} else if (lastX > currentX + 50) {
 				preview.switchCamera();
+				final FrameLayout frame = (FrameLayout) findViewById(R.id.camera_preview);
+				//CamOps.setPictureOrientation(this, preview.getCamID(),preview.getCam());
+				new Handler().postDelayed(new Runnable() {
+			        @Override
+			        public void run() {
+			        	int width = frame.getWidth();
+						int height = frame.getHeight();
+						Camera.Parameters params = preview.getCam().getParameters();
+						//Toast.makeText(context, "1" + height + "" + width, Toast.LENGTH_SHORT).show();
+						int newHeight = width * params.getPreviewSize().width/params.getPreviewSize().height;
+						int pad = height - newHeight;
+						//Toast.makeText(context, "2" + height + "" + width, Toast.LENGTH_SHORT).show();
+						frame.setPadding(0, pad/2, 0, pad/2);
+			        }
+			    },30);
 			}
 
-			else if ((lastX <= currentX + 3) && (lastX >= currentX - 3)) {
+			else if ((lastX <= currentX + 5) && (lastX >= currentX - 5)) {
 				try {
 					// removes previous filter images
 					DealWithPictureActivity.removeFilterImages();
 					DealWithPictureActivity.removeCurrentImage();
+					final FrameLayout frame = (FrameLayout) findViewById(R.id.camera_preview);
 					// sets the orientation of the picture
-					CamOps.setPictureOrientation(this, preview.getCamID(),preview.getCam());
+					//CamOps.setPictureOrientation(this, preview.getCamID(),preview.getCam());
 					preview.getCam().takePicture(null, null,new PictureCallback() {
 						@Override
 						public void onPictureTaken(byte[] data,Camera camera) {
@@ -134,6 +147,7 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 								Intent dealWithPictureIntent = new Intent();
 								dealWithPictureIntent.setClassName(PACKAGE_NAME,PACKAGE_NAME + ".DealWithPictureActivity");
 								dealWithPictureIntent.putExtra("orientation", rotation);
+								dealWithPictureIntent.putExtra("w", frame.getWidth());
 								EldPhotoApplication.setPicture(data); // sends the picture data to the application class
 								startActivity(dealWithPictureIntent);
 							}

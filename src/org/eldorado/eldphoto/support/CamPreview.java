@@ -58,7 +58,8 @@ public class CamPreview extends SurfaceView implements SurfaceHolder.Callback{
 				//adjusts the camera display orientation
 				CamActivity activity = (CamActivity) getContext();
 				activity.getOrientationListener().enable();
-				CamOps.setCameraDisplayOrientation(cam);
+				//CamOps.setCameraDisplayOrientation(cam);
+				//CamOps.setPictureSize(cam);
 
 				cam.setPreviewDisplay(holder); //sets the surface displayer
 				cam.startPreview(); //starts showing the preview
@@ -118,7 +119,7 @@ public class CamPreview extends SurfaceView implements SurfaceHolder.Callback{
 			cam = null;
 			cam = CamOps.cam;
 			cam.setPreviewDisplay(holder);
-			CamOps.setCameraDisplayOrientation(cam);
+			//CamOps.setPictureSize(cam);
 			cam.startPreview();
 		}
 		catch(Exception ex){

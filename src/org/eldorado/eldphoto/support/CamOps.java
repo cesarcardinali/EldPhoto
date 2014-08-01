@@ -4,10 +4,15 @@ import java.util.List;
 
 import org.eldorado.eldphoto.CamActivity;
 
+import android.app.Activity;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Size;
+import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 
 /** This class provides some operations over the camera.
  * It currently opens the camera and returns a reference to it, sets the optimal display and picture orientation and
@@ -30,8 +35,7 @@ public class CamOps {
 	 * @return Camera - A ready-for-use Camera object.
 	 * @throws RuntimeException - When the camera is busy or it couldn't be opened.
 	 */
-	public static Camera safelyOpen(int id, View v)
-	throws RuntimeException{
+	public static Camera safelyOpen(int id, View v) throws RuntimeException{
 		//creates the Camera object
 		cam = null;
 		
@@ -45,6 +49,7 @@ public class CamOps {
 	    cam = Camera.open(id);
 	    cam_id = id;
 	    view = v;
+	    cam.setDisplayOrientation(90);
 	    
 		//returns the new instance to a opened Camera
 		return cam;
@@ -104,12 +109,12 @@ public class CamOps {
 		
 		//chooses the best picture size option:
 		int width = params.getPreviewSize().width;
-		int height = params.getPreviewSize().height;
+		//int height = params.getPreviewSize().height;
 		//gets a list with the supported picture sizes
 		List<Size> picSizes = params.getSupportedPictureSizes();
 		
 		//computes the size ratio of the preview
-		int ratio = 100*width/height;
+		//int ratio = 100*width/height;
 		
 		//if the first picture width is greater than the preview width, ...
 		if(picSizes.get(0).width >= width)
@@ -117,11 +122,9 @@ public class CamOps {
 			//checks the list from the beginning
 			for(int i = 0; i < picSizes.size(); i++){
 				
-				int picRatio = 100*picSizes.get(i).width/picSizes.get(i).height;
-
+				//int picRatio = 100*picSizes.get(i).width/picSizes.get(i).height;
 				//if the picture has the same ratio as the preview display, and both dimensions are smaller than 2048, choose this size
-				if(ratio == picRatio && picSizes.get(i).width <= 2048 && picSizes.get(i).height <= 2048){
-					
+				if(/*ratio == picRatio &&*/ picSizes.get(i).width <= 2048 && picSizes.get(i).height <= 2048){
 					params.setPictureSize(picSizes.get(i).width, picSizes.get(i).height);
 					break;
 				}
@@ -131,9 +134,9 @@ public class CamOps {
 			//checks the list from the end
 			for(int i = picSizes.size() - 1; i >= 0; i--){
 				
-				int picRatio = 100*picSizes.get(i).width/picSizes.get(i).height;
+				/*int picRatio = 100*picSizes.get(i).width/picSizes.get(i).height;*/
 				//if the picture has the same ratio as the preview display, and both dimensions are smaller than 2048, choose this size
-				if(ratio == picRatio && picSizes.get(i).width <= 2048 && picSizes.get(i).height <= 2048){
+				if(/*ratio == picRatio &&*/ picSizes.get(i).width <= 2048 && picSizes.get(i).height <= 2048){
 					
 					params.setPictureSize(picSizes.get(i).width, picSizes.get(i).height);
 					break;
@@ -142,6 +145,62 @@ public class CamOps {
 
 		//sets all parameters
 		camera.setParameters(params);
+	}
+	
+	public static void setPictureSize(Camera camera){
+		Camera.Parameters params = camera.getParameters();
+		
+		//gets a list with the supported picture sizes
+		List<Size> picSizes = params.getSupportedPictureSizes();
+		//gets a list with the supported preview sizes
+		List<Size> previewSizes = params.getSupportedPreviewSizes();
+
+		
+		for(int i = 0; i < picSizes.size(); i++){
+			Log.d("CAMOPS", "W: " + picSizes.get(i).width + "- H: " + picSizes.get(i).height + "  ||   Ratio: " + 100*picSizes.get(i).height/picSizes.get(i).width + " - PrevRat: " + 100*params.getPreviewSize().height/params.getPreviewSize().width);
+			
+			/*if(previewSizes.get(i).width < 600){
+				params.setPreviewSize(previewSizes.get(i-1).width, previewSizes.get(i-1).height);
+			}*/
+		}
+		
+		Log.d("CAMOPS", "W: " + params.getPictureSize().width + "\nH: " + params.getPictureSize().height);
+		/*
+		
+		//chooses the best picture size option:
+		int width = params.getPreviewSize().width;
+		int height = params.getPreviewSize().height;
+		//computes the size ratio of the preview
+		int ratio = 100*width/height;
+		
+
+		if(picSizes.get(0).width <= picSizes.get(1).width){
+			//checks the list from the beginning
+			for(int i = 0; i < picSizes.size(); i++){
+				int picRatio = 100*picSizes.get(i).width/picSizes.get(i).height;
+				//if the picture has the same ratio as the preview display, and both dimensions are smaller than 2048, choose this size
+				if(ratio == picRatio && picSizes.get(i).width <= 2048 && picSizes.get(i).height <= 2048){
+					params.setPictureSize(picSizes.get(i).width, picSizes.get(i).height);
+					break;
+				}
+			}
+		}
+		//if the first picture width is smaller than the preview width, ...
+		else{
+			//checks the list from the end
+			for(int i = picSizes.size() - 1; i >= 0; i--){
+				int picRatio = 100*picSizes.get(i).width/picSizes.get(i).height;
+				//if the picture has the same ratio as the preview display, and both dimensions are smaller than 2048, choose this size
+				if(ratio == picRatio && picSizes.get(i).width <= 2048 && picSizes.get(i).height <= 2048){
+					//params.setPreviewSize(600, 600*picSizes.get(i).height/picSizes.get(i).width);
+					params.setPictureSize(picSizes.get(i).width, picSizes.get(i).height);
+					break;
+				}
+			}
+		}
+		
+		//sets all parameters
+		//camera.setParameters(params);*/
 	}
 	
 	/** Switches the camera from back to front and vice-versa.
