@@ -24,8 +24,8 @@ import android.view.WindowManager;
 public class CamOps {
 
 	private static View view;
-	public static Camera cam;
-	public static int cam_id;
+	public  static Camera cam;
+	public  static int cam_id;
 	
 	/**
 	 * Creates, opens and returns an instance of a Camera object.
@@ -147,60 +147,61 @@ public class CamOps {
 		camera.setParameters(params);
 	}
 	
-	public static void setPictureSize(Camera camera){
+	public static void setPictureSize(Camera camera, int frameRatio){
 		Camera.Parameters params = camera.getParameters();
 		
 		//gets a list with the supported picture sizes
 		List<Size> picSizes = params.getSupportedPictureSizes();
 		//gets a list with the supported preview sizes
 		List<Size> previewSizes = params.getSupportedPreviewSizes();
-
 		
-		for(int i = 0; i < picSizes.size(); i++){
-			Log.d("CAMOPS", "W: " + picSizes.get(i).width + "- H: " + picSizes.get(i).height + "  ||   Ratio: " + 100*picSizes.get(i).height/picSizes.get(i).width + " - PrevRat: " + 100*params.getPreviewSize().height/params.getPreviewSize().width);
-			
-			/*if(previewSizes.get(i).width < 600){
-				params.setPreviewSize(previewSizes.get(i-1).width, previewSizes.get(i-1).height);
-			}*/
+		Log.d("CAMOPS", "Picsize - W: " + params.getPictureSize().width + " - H: " + params.getPictureSize().height);
+		Log.d("CAMOPS", "Prevsize - W: " + params.getPreviewSize().width + " - H: " + params.getPreviewSize().height);
+
+		int aux = 0;
+		for (int i = 0; i < picSizes.size(); i++) {
+			int ratio = 100 * picSizes.get(i).height/picSizes.get(i).width;
+			if (picSizes.get(i).width > aux && picSizes.get(i).width < 2000 && (ratio > frameRatio - 2 && ratio < frameRatio + 2)) {
+				aux = picSizes.get(i).width;
+				params.setPictureSize(picSizes.get(i).width, picSizes.get(i).height);
+			}
+		}
+
+		aux = 0;
+		for (int i = 0; i < previewSizes.size(); i++) {
+			int ratio = 100 * previewSizes.get(i).height/previewSizes.get(i).width;
+			if (previewSizes.get(i).width > aux && previewSizes.get(i).width < 1025 && (ratio > frameRatio - 2 && ratio < frameRatio + 2)) {
+				aux = previewSizes.get(i).width;
+				params.setPreviewSize(previewSizes.get(i).width, previewSizes.get(i).height);
+			}
 		}
 		
-		Log.d("CAMOPS", "W: " + params.getPictureSize().width + "\nH: " + params.getPictureSize().height);
-		/*
-		
-		//chooses the best picture size option:
-		int width = params.getPreviewSize().width;
-		int height = params.getPreviewSize().height;
-		//computes the size ratio of the preview
-		int ratio = 100*width/height;
-		
-
-		if(picSizes.get(0).width <= picSizes.get(1).width){
-			//checks the list from the beginning
-			for(int i = 0; i < picSizes.size(); i++){
-				int picRatio = 100*picSizes.get(i).width/picSizes.get(i).height;
-				//if the picture has the same ratio as the preview display, and both dimensions are smaller than 2048, choose this size
-				if(ratio == picRatio && picSizes.get(i).width <= 2048 && picSizes.get(i).height <= 2048){
+		if (aux == 0){
+			for (int i = 0; i < picSizes.size(); i++) {
+				int ratio = 100 * picSizes.get(i).height/picSizes.get(i).width;
+				if (picSizes.get(i).width > aux && picSizes.get(i).width < 2000 && (ratio > 75 - 2 && ratio < 75 + 2)) {
+					aux = picSizes.get(i).width;
 					params.setPictureSize(picSizes.get(i).width, picSizes.get(i).height);
-					break;
+				}
+			}
+
+			aux = 0;
+			for (int i = 0; i < previewSizes.size(); i++) {
+				int ratio = 100 * previewSizes.get(i).height/previewSizes.get(i).width;
+				if (previewSizes.get(i).width > aux && previewSizes.get(i).width < 1025 && (ratio > 75 - 2 && ratio < 75 + 2)) {
+					aux = previewSizes.get(i).width;
+					params.setPreviewSize(previewSizes.get(i).width, previewSizes.get(i).height);
 				}
 			}
 		}
-		//if the first picture width is smaller than the preview width, ...
-		else{
-			//checks the list from the end
-			for(int i = picSizes.size() - 1; i >= 0; i--){
-				int picRatio = 100*picSizes.get(i).width/picSizes.get(i).height;
-				//if the picture has the same ratio as the preview display, and both dimensions are smaller than 2048, choose this size
-				if(ratio == picRatio && picSizes.get(i).width <= 2048 && picSizes.get(i).height <= 2048){
-					//params.setPreviewSize(600, 600*picSizes.get(i).height/picSizes.get(i).width);
-					params.setPictureSize(picSizes.get(i).width, picSizes.get(i).height);
-					break;
-				}
-			}
-		}
+		
+		Log.d("CAMOPS", "nPicsize - W: " + params.getPictureSize().width + " - H: " + params.getPictureSize().height);
+		Log.d("CAMOPS", "nPrevsize - W: " + params.getPreviewSize().width + " - H: " + params.getPreviewSize().height);
+		
+		
 		
 		//sets all parameters
-		//camera.setParameters(params);*/
+		camera.setParameters(params);
 	}
 	
 	/** Switches the camera from back to front and vice-versa.

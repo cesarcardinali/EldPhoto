@@ -56,43 +56,25 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 			if(preview == null)
 				preview = new CamPreview(this);
 			
+			CamOps.setPictureSize(preview.getCam(),56);
 			final FrameLayout frame = (FrameLayout) findViewById(R.id.camera_preview);
-			//CamOps.setPictureOrientation(this, preview.getCamID(),preview.getCam());
 			frame.addView(preview);
 			//Fixing screen proportion
 			new Handler().postDelayed(new Runnable() {
 		        @Override
 		        public void run() {
-		        	int width = frame.getWidth();
-					int height = frame.getHeight();
+		        	int height = frame.getWidth();
+					int width = frame.getHeight();
 					Camera.Parameters params = preview.getCam().getParameters();
-					//Toast.makeText(context, "1" + height + "" + width, Toast.LENGTH_SHORT).show();
-					int newHeight = width * params.getPreviewSize().width/params.getPreviewSize().height;
-					int pad = height - newHeight;
-					//Toast.makeText(context, "2" + height + "" + width, Toast.LENGTH_SHORT).show();
-					frame.setPadding(0, pad/2, 0, pad/2);
+					int Cwidth = params.getPreviewSize().width;
+					int Cheight = params.getPreviewSize().height;
+					int newWidth = width*Cheight/Cwidth;
+					int pad = height - newWidth;
+					frame.setPadding(pad/2, 0, pad/2, 0);
+					Log.d("CAMOPS", "W: " + width + " - H: " + height + " ||- cW: " + Cwidth + " - cH: " + Cheight);
+					Log.d("CAMOPS", "newH: " + newWidth);
 		        }
 		    },30);
-			
-
-			/*listView = (ListView) findViewById(R.id.listView);
-			clickListener = new OnItemClickListener() {
-			    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-			    	Camera.Parameters params = preview.getCam().getParameters();
-					List<String> items = params.getSupportedColorEffects();
-					List<Size> size = params.getSupportedPreviewSizes();
-		            params.setPreviewSize(size.get(0).width, size.get(0).height);
-					params.setColorEffect(items.get(position));
-			    	preview.getCam().setParameters(params);
-			    	
-			    	//listView.setVisibility(View.INVISIBLE);
-			    	textView.setVisibility(View.INVISIBLE);
-			    }
-			};
-			
-			//listView.setOnItemClickListener(clickListener);
-			textView = (TextView) findViewById(R.id.text_choosing_filters);
-			textView.setBackgroundColor(Color.WHITE);*/
         }
         catch(RuntimeException ex){
         	ex.printStackTrace();
@@ -101,6 +83,10 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		final FrameLayout frame = (FrameLayout) findViewById(R.id.camera_preview);
+		int width = frame.getWidth();
+		int height = frame.getHeight();
+		int ratio = width*100/height;
 		switch (event.getAction()) {
 		// when user first touches the screen to swap
 		case MotionEvent.ACTION_DOWN: {
@@ -111,25 +97,42 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 			float currentX = event.getX();
 			// if left to right swipe on screen
 			if (lastX < currentX - 50) {
-				Toast.makeText(context, "Orientation Prev: " + rotation, Toast.LENGTH_LONG).show();
-				CamOps.setPictureSize(preview.getCam());
+				CamOps.setPictureSize(preview.getCam(), 56);
+				new Handler().postDelayed(new Runnable() {
+			        @Override
+			        public void run() {
+			        	int height = frame.getWidth();
+						int width = frame.getHeight();
+						Camera.Parameters params = preview.getCam().getParameters();
+						int Cwidth = params.getPreviewSize().width;
+						int Cheight = params.getPreviewSize().height;
+						int newWidth = width*Cheight/Cwidth;
+						int pad = height - newWidth;
+						frame.setPadding(pad/2, 0, pad/2, 0);
+						Log.d("CAMOPS", "W: " + width + " - H: " + height + " ||- cW: " + Cwidth + " - cH: " + Cheight);
+						Log.d("CAMOPS", "newH: " + newWidth);
+			        }
+			    },30);
 			} else if (lastX > currentX + 50) {
-				preview.switchCamera();
-				final FrameLayout frame = (FrameLayout) findViewById(R.id.camera_preview);
+				preview.switchCamera();//cam_id 1 e 0
+				CamOps.setPictureSize(preview.getCam(),56);
 				//CamOps.setPictureOrientation(this, preview.getCamID(),preview.getCam());
 				new Handler().postDelayed(new Runnable() {
 			        @Override
 			        public void run() {
-			        	int width = frame.getWidth();
-						int height = frame.getHeight();
+			        	int height = frame.getWidth();
+						int width = frame.getHeight();
 						Camera.Parameters params = preview.getCam().getParameters();
-						//Toast.makeText(context, "1" + height + "" + width, Toast.LENGTH_SHORT).show();
-						int newHeight = width * params.getPreviewSize().width/params.getPreviewSize().height;
-						int pad = height - newHeight;
-						//Toast.makeText(context, "2" + height + "" + width, Toast.LENGTH_SHORT).show();
-						frame.setPadding(0, pad/2, 0, pad/2);
+						int Cwidth = params.getPreviewSize().width;
+						int Cheight = params.getPreviewSize().height;
+						int newWidth = width*Cheight/Cwidth;
+						int pad = height - newWidth;
+						frame.setPadding(pad/2, 0, pad/2, 0);
+						Log.d("CAMOPS", "Switch Camera!");
+						Log.d("CAMOPS", "W: " + width + " - H: " + height + " ||- cW: " + Cwidth + " - cH: " + Cheight);
+						Log.d("CAMOPS", "newW: " + newWidth);
 			        }
-			    },30);
+			    },100);
 			}
 
 			else if ((lastX <= currentX + 5) && (lastX >= currentX - 5)) {
@@ -137,7 +140,6 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 					// removes previous filter images
 					DealWithPictureActivity.removeFilterImages();
 					DealWithPictureActivity.removeCurrentImage();
-					final FrameLayout frame = (FrameLayout) findViewById(R.id.camera_preview);
 					// sets the orientation of the picture
 					//CamOps.setPictureOrientation(this, preview.getCamID(),preview.getCam());
 					preview.getCam().takePicture(null, null,new PictureCallback() {
