@@ -55,9 +55,9 @@ public class DealWithPictureActivity extends Activity {
 	private static boolean isThereEffectApplied = false; //whether there is an effect/filter applied to the original image being displayed
 	
 	private Context context = this;
+	int did = 0;
 	
 	public DealWithPictureActivity() {
-		
 		super();
 		effectsFactory = new EffectsFactory();
 	}
@@ -66,9 +66,7 @@ public class DealWithPictureActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_deal_with_picture);
-		
-		clearImages();
-		
+				
 		int orientation = -1, newOr = -1;
 		
 		Bundle extras = getIntent().getExtras();
@@ -152,15 +150,7 @@ public class DealWithPictureActivity extends Activity {
 		
 		//displays the filters/effects options, when available
 		showFilters();
-	}
-	
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		picture = null;
-		clearImages();
-	}
-	
+	}	
 	
 	/** Shows the effects/filters implementation available.
 	 * It calls the implementation and apply them on thumbnails.
@@ -274,47 +264,9 @@ public class DealWithPictureActivity extends Activity {
 				                    }
 				                    if(currentX < lastX+5 && currentX > lastX-5){
 										try{
-											/*
-											//gets the image view with the current image
-											ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-											//gets the name of the clicked filter/effect thumbnail
-											LinearLayout layout = (LinearLayout) v;
-											TextView text = (TextView) layout.getChildAt(0);
-											String str = (String) text.getText();
-											int id = 0;
-	
-											//gets the id corresponding to such filter/effect
-											for(int i = 0; i < EffectsFactory.getNumberOfEffectsAvailable(); i++)
-											{
-												if(str.compareTo(effectsFactory.getEffect(i).getName()) == 0){
-													id = i;
-													break;
-												}
-											}
-											//applies the filter/effect to the original image and makes it the current one
-											currentImage = effectsFactory.getEffect(id).applyEffect(previewImage);
-											//storeImage = effectsFactory.getEffect(id).applyEffect(image);
-											if(storeImage.getHeight() > 2048){
-												storeImage = effectsFactory.getEffect(id).applyEffect(Bitmap.createScaledBitmap(image, (image.getWidth()*2048)/image.getHeight(), 2048, false));
-											}			
-											else if(storeImage.getWidth() > 2048){
-												storeImage = effectsFactory.getEffect(id).applyEffect(Bitmap.createScaledBitmap(image, 2048, (image.getHeight()*2048/image.getWidth()), false));
-											} else
-												storeImage = effectsFactory.getEffect(id).applyEffect(image);
-	
-											//displays the new image with the filter/effect applied
-											imageView.setImageBitmap(currentImage);
-	
-											//makes the undo button visible
-											Button undoButton = (Button) findViewById(R.id.undoButton);
-											undoButton.setVisibility(View.VISIBLE);
-											
-											//signalizes that an effect/filter was applied
-											isThereEffectApplied = true;*/
 											applyFilter(v);
 										}
 										catch(Exception ex){
-	
 											//if something goes wrong, displays the error message
 											Toast.makeText(context, ex.getMessage(), Toast.LENGTH_LONG).show();
 										}
@@ -458,12 +410,10 @@ public class DealWithPictureActivity extends Activity {
 		this.finish();
 	}
 	
-	/** This method is to be written.
-	 * It should send the picture to the class that will send it to the remote server.
-	 * 
-	 * @param view
-	 */
-	public void sendPicture(View view){}
+	public void cancelPicture(){
+		clearImages();
+		this.finish();
+	}
 	
 	/** Removes all filter images previously computed.
 	 * 
@@ -583,4 +533,30 @@ public class DealWithPictureActivity extends Activity {
 		//signalizes that an effect/filter was applied
 		isThereEffectApplied = true;
 	}
+	
+	
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	  super.onSaveInstanceState(savedInstanceState);
+	  // Save UI state changes to the savedInstanceState.
+	  // This bundle will be passed to onCreate if the process is
+	  // killed and restarted.
+	  savedInstanceState.putBoolean("MyBoolean", true);
+	  savedInstanceState.putDouble("myDouble", 1.9);
+	  savedInstanceState.putInt("MyInt", 1);
+	  savedInstanceState.putString("MyString", "Welcome back to Android");
+	  // etc.
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	}
+	
+	@Override
+	public void onBackPressed() {
+		cancelPicture();
+	}
 }
+
+

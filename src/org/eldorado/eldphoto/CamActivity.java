@@ -169,12 +169,15 @@ public class CamActivity extends Activity{// implements OnHoverListener{ // impl
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		this.preview = null; 
+		if(preview != null)
+			this.preview = null; 
 	}
 	
 	@Override
 	public void onBackPressed() {
-		finish();
+		if(preview != null)
+			this.preview = null;
+		this.finish();
 		System.exit(0);
 	}
 	
