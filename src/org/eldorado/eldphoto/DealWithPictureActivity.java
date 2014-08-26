@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import org.eldorado.eldphoto.support.Constant;
 import org.eldorado.eldphoto.support.EffectsFactory;
+
+import cn.Ragnarok.BitmapFilter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -31,7 +34,7 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 /** This class is the activity that shows the options to deal with the taken picture.
- * From here, the user may apply another filter or effect in the image, send it to the server or
+ * From here, the user may apply another filter or effect in the originalImage, send it to the server or
  * cancel it and return to the camera preview activity.
  * 
  * @author phack
@@ -41,25 +44,25 @@ public class DealWithPictureActivity extends Activity {
 
 	public  static final String PICTURE = "org.eldorado.eldphoto.PICTURE";
 	private byte[] picture; //the picture taken as a byte array
-	private Bitmap image; //the picture taken as a bitmap
+	private Bitmap originalImage; //the picture taken as a bitmap
 	private Bitmap previewImage;
 	private Bitmap storeImage;
-	private static Bitmap currentImage = null; //the image displayed (can be the original or a effect-applied one)
+	private static Bitmap currentImage = null; //the originalImage displayed (can be the original or a effect-applied one)
 	
 	private ViewFlipper viewFlipper; //the view which contains the graphical components to show the effects/filters options
 	
 	private float lastX; //the last X position of the screen touch event
 	private static ArrayList<Bitmap> filterImages = new ArrayList<Bitmap>(); //the list with the effects/filters thumbnail images
 
-	private EffectsFactory effectsFactory; //the effects factory object
-	private static boolean isThereEffectApplied = false; //whether there is an effect/filter applied to the original image being displayed
+	//private EffectsFactory effectsFactory; //the effects factory object
+	private static boolean isThereEffectApplied = false; //whether there is an effect/filter applied to the original originalImage being displayed
 	
 	private Context context = this;
-	int did = 0;
+	int finalEffect = -1, idEffect = 1;
 	
 	public DealWithPictureActivity() {
 		super();
-		effectsFactory = new EffectsFactory();
+		//effectsFactory = new EffectsFactory();
 	}
 	
 	@Override
@@ -90,11 +93,11 @@ public class DealWithPictureActivity extends Activity {
 		//retrieves the picture data from the intent
 		if (EldPhotoApplication.hasBitmap() == true) {
 			Toast.makeText(context, "sfdgfdsg", Toast.LENGTH_LONG).show();
-			image = EldPhotoApplication.getBitmap();
+			originalImage = EldPhotoApplication.getBitmap();
 			/*Matrix matrix = new Matrix();
 			orientation = newOr + 90;
 			matrix.postRotate(orientation);
-			image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);*/
+			originalImage = Bitmap.createBitmap(originalImage, 0, 0, originalImage.getWidth(), originalImage.getHeight(), matrix, true);*/
 		}
 		else {
 			picture = EldPhotoApplication.getPicture();
@@ -102,35 +105,42 @@ public class DealWithPictureActivity extends Activity {
 			options.inPurgeable = true; //allows the system to reclaim memory
 			options.inInputShareable = true; //keeps a shallow reference to the data
 			//converts the byte array into bitmap
-			image = BitmapFactory.decodeByteArray(picture, 0, picture.length, options);
-			//EldPhotoApplication.setBitmap(image);
+			originalImage = BitmapFactory.decodeByteArray(picture, 0, picture.length, options);
+			//EldPhotoApplication.setBitmap(originalImage);
 			Matrix matrix = new Matrix();
 			orientation = newOr + 90;
 			matrix.postRotate(orientation);
-			image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
+			originalImage = Bitmap.createBitmap(originalImage, 0, 0, originalImage.getWidth(), originalImage.getHeight(), matrix, true);
 		}
 		
-		storeImage = image.copy(image.getConfig(), true);
-		//storeImage = image;
+		storeImage = originalImage.copy(originalImage.getConfig(), true);
+		//storeImage = originalImage;
 		
 		Button sendButton = (Button) findViewById(R.id.Button2);		
 		sendButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				if(originalImage.getHeight() > 2048){
+					storeImage = Bitmap.createScaledBitmap(originalImage, (originalImage.getWidth()*2048)/originalImage.getHeight(), 2048, false);
+				}			
+				else if(originalImage.getWidth() > 2048){
+					storeImage = Bitmap.createScaledBitmap(originalImage, 2048, (originalImage.getHeight()*2048/originalImage.getWidth()), false);
+				}
+				storeImage = applyStyle(originalImage, finalEffect);
 				storeImage(getApplicationContext(), storeImage);
 			}
 		});
 		
-		//displays the current image
+		//displays the current originalImage
 		ImageView imageView = (ImageView) findViewById(R.id.imageView1);
 		imageView.setAdjustViewBounds(true);
 
 		int W =  extras.getInt("w");
-		previewImage = Bitmap.createScaledBitmap(image, W, Math.round((float)(W/(float)image.getWidth())*(float)image.getHeight()), true);
+		previewImage = Bitmap.createScaledBitmap(originalImage, W, Math.round((float)(W/(float)originalImage.getWidth())*(float)originalImage.getHeight()), true);
 		
 		//if this is the first time the activity is created for that picture, ...
 		if(currentImage == null)
-			//saves the image as the current image
+			//saves the originalImage as the current originalImage
 			currentImage = previewImage.copy(previewImage.getConfig(), true);
 			//currentImage = previewImage;
 		//otherwise, if some effect/filter was applied, ...
@@ -146,7 +156,7 @@ public class DealWithPictureActivity extends Activity {
 		viewFlipper = (ViewFlipper) findViewById(R.id.viewFlipper1);
 		
 		//sends the context information to effectsFactory class
-		effectsFactory.setContext(context);
+		//effectsFactory.setContext(context);
 		
 		//displays the filters/effects options, when available
 		showFilters();
@@ -160,9 +170,10 @@ public class DealWithPictureActivity extends Activity {
 	 */
 	@SuppressLint("NewApi")
 	public void showFilters(){
+		int nFilters = 0;
 		try{
 			//checks for the available filters/effects (this must be called before 'getNumberOfEffectsAvailable()' method)
-			EffectsFactory.getAvailableEffects();
+			nFilters = Constant.styles.length;
 		}
 		catch(Exception ex){
 			//if there was a problem, display its message
@@ -176,7 +187,7 @@ public class DealWithPictureActivity extends Activity {
 		//if this is the first time we show the filters thumbnails, they shall be processed
 		if(filterImages.size() == 0){
 			//for each of the available effects/filters...
-			for(int id = 0; id < EffectsFactory.getNumberOfEffectsAvailable(); id++){
+			for(int id = 0; id < nFilters; id++){
 
 				try{
 					//creates the graphical components to display the thumbnails the layout
@@ -186,20 +197,20 @@ public class DealWithPictureActivity extends Activity {
 					
 					//the text view with the filter/effect's name
 					TextView textView = new TextView(context);
-					textView.setText(effectsFactory.getEffect(id).getName());
+					textView.setText(Constant.styles[id].toString());
 					textView.setGravity(Gravity.CENTER);
 					
-					//the image view with the thumbnail with the filter/effect applied
+					//the originalImage view with the thumbnail with the filter/effect applied
 					ImageView filterView = new ImageView(context);
 					filterView.setAdjustViewBounds(false);
 					filterView.setMaxHeight(80);
 					filterView.setMaxWidth(80);
 
-					//gets the dimensions of the original image
-					int width = image.getWidth();
-					int height = image.getHeight();
+					//gets the dimensions of the original originalImage
+					int width = originalImage.getWidth();
+					int height = originalImage.getHeight();
 
-					//computes the dimensions of the thumbnail according to the dimensions of the original image
+					//computes the dimensions of the thumbnail according to the dimensions of the original originalImage
 					if(width > height){
 						//sets the height proportionally
 						height = Math.round(height * 100.0f/width);
@@ -211,18 +222,20 @@ public class DealWithPictureActivity extends Activity {
 						width = Math.round(width * 100.0f/height);
 						height = 100;
 					}
-					
+					//parei aki
 					//adds into the list 'filterImages' the thumbnail with the filter/effect applied and with he computed dimensions
-					filterImages.add(effectsFactory.getEffect(id).applyEffect(Bitmap.createScaledBitmap(previewImage, width, height, false)));
+					filterImages.add(applyStyle(Bitmap.createScaledBitmap(previewImage, width, height, false),id+1));
+					//filterImages.add(Bitmap.createScaledBitmap(previewImage, width, height, false));
 
-					//sets the image view's image bitmap to the thumbnail
+					//sets the originalImage view's originalImage bitmap to the thumbnail
 					filterView.setImageBitmap(filterImages.get(id));
 
 					layout.addView(textView); //puts the text view inside the layout
-					layout.addView(filterView); //puts the image view inside the layout
+					layout.addView(filterView); //puts the originalImage view inside the layout
 					
-					//sets the method that will be called when the image view with the thumbnail is clicked
+					//sets the method that will be called when the originalImage view with the thumbnail is clicked
 					layout.setOnTouchListener(new View.OnTouchListener() {					
+						
 						@Override
 						public boolean onTouch(View v, MotionEvent event) {
 							switch (event.getAction())
@@ -248,6 +261,8 @@ public class DealWithPictureActivity extends Activity {
 				                        viewFlipper.setOutAnimation(context, R.anim.out_to_right);
 				                        // Show the previous Screen
 				                        viewFlipper.showPrevious();
+				                        if(idEffect > 1)
+				                        	idEffect--;
 				                    }
 				                    
 				                    // if right to left swipe on screen
@@ -261,10 +276,23 @@ public class DealWithPictureActivity extends Activity {
 				                        viewFlipper.setOutAnimation(context, R.anim.out_to_left);
 				                        // Show The Next Screen
 				                        viewFlipper.showNext();
+				                        if(idEffect < 20)
+				                        	idEffect++;
 				                    }
 				                    if(currentX < lastX+5 && currentX > lastX-5){
 										try{
-											applyFilter(v);
+											//applyFilter(v); effectsfactory
+											currentImage = applyStyle(previewImage, idEffect);
+											//displays the new originalImage with the filter/effect applied
+											ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+											imageView.setImageBitmap(currentImage);
+											finalEffect = idEffect;
+											//makes the undo button visible
+											Button undoButton = (Button) findViewById(R.id.undoButton);
+											undoButton.setVisibility(View.VISIBLE);
+											
+											//signalizes that an effect/filter was applied
+											isThereEffectApplied = true;
 										}
 										catch(Exception ex){
 											//if something goes wrong, displays the error message
@@ -288,7 +316,7 @@ public class DealWithPictureActivity extends Activity {
 		//else, if this isn't the first time we compute the thumbnails for the filters/effects for that picture...
 		else{
 			//for each of the available filters/effects, ...
-			for(int id = 0; id < EffectsFactory.getNumberOfEffectsAvailable(); id++){
+			for(int id = 0; id < nFilters; id++){
 				try{
 					//creates the graphical components to display the thumbnails 
 					//the layout
@@ -298,22 +326,23 @@ public class DealWithPictureActivity extends Activity {
 
 					//the text view with the filter/effect's name
 					TextView textView = new TextView(this);
-					textView.setText(effectsFactory.getEffect(id).getName());
+					textView.setText(Constant.styles[id]);
 					textView.setGravity(Gravity.CENTER);
 
-					//the image view with the thumbnail with the filter/effect applied
+					//the originalImage view with the thumbnail with the filter/effect applied
 					ImageView filterView = new ImageView(this);
 					filterView.setAdjustViewBounds(false);
 					filterView.setMaxHeight(80);
 					filterView.setMaxWidth(80);
 
-					//sets the image view's image bitmap to the thumbnail
+					//sets the originalImage view's originalImage bitmap to the thumbnail
 					filterView.setImageBitmap(filterImages.get(id));
 
 					layout.addView(textView); //puts the text view inside the layout
-					layout.addView(filterView); //puts the image view inside the layout
-					//sets the method that will be called when the image view with the thumbnail is clicked
+					layout.addView(filterView); //puts the originalImage view inside the layout
+					//sets the method that will be called when the originalImage view with the thumbnail is clicked
 					layout.setOnTouchListener(new View.OnTouchListener() {					
+						
 						@Override
 						public boolean onTouch(View v, MotionEvent event) {
 							switch (event.getAction())
@@ -339,6 +368,8 @@ public class DealWithPictureActivity extends Activity {
 				                        viewFlipper.setOutAnimation(context, R.anim.out_to_right);
 				                        // Show the previous Screen
 				                        viewFlipper.showPrevious();
+				                        if(idEffect > 1)
+				                        	idEffect--;
 				                    }
 				                    
 				                    // if right to left swipe on screen
@@ -352,10 +383,30 @@ public class DealWithPictureActivity extends Activity {
 				                        viewFlipper.setOutAnimation(context, R.anim.out_to_left);
 				                        // Show The Next Screen
 				                        viewFlipper.showNext();
+				                        if(idEffect < 20)
+				                        	idEffect++;
 				                    }
 				                    if(currentX < lastX+5 && currentX > lastX-5){
 										try{
-											applyFilter(v);
+											//applyFilter(v); effectsfactory
+											currentImage = applyStyle(previewImage, idEffect);
+											if(originalImage.getHeight() > 2048){
+												storeImage = Bitmap.createScaledBitmap(originalImage, (originalImage.getWidth()*2048)/originalImage.getHeight(), 2048, false);
+											}			
+											else if(originalImage.getWidth() > 2048){
+												storeImage = Bitmap.createScaledBitmap(originalImage, 2048, (originalImage.getHeight()*2048/originalImage.getWidth()), false);
+											}
+											//storeImage = applyStyle(originalImage, id);
+											//displays the new originalImage with the filter/effect applied
+											ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+											imageView.setImageBitmap(currentImage);
+											finalEffect = idEffect;
+											//makes the undo button visible
+											Button undoButton = (Button) findViewById(R.id.undoButton);
+											undoButton.setVisibility(View.VISIBLE);
+											
+											//signalizes that an effect/filter was applied
+											isThereEffectApplied = true;
 										}
 										catch(Exception ex){
 											//if something goes wrong, displays the error message
@@ -378,18 +429,58 @@ public class DealWithPictureActivity extends Activity {
 		}
 	}
 	
+	private Bitmap applyStyle(Bitmap originBitmap,int styleNo) {
+		switch (styleNo) {
+		case BitmapFilter.AVERAGE_BLUR_STYLE:
+			return BitmapFilter.changeStyle(originBitmap, BitmapFilter.AVERAGE_BLUR_STYLE, 5); // maskSize, must odd
+			
+		case BitmapFilter.GAUSSIAN_BLUR_STYLE:
+			return BitmapFilter.changeStyle(originBitmap, BitmapFilter.GAUSSIAN_BLUR_STYLE, 1.2); // sigma
+			
+		case BitmapFilter.SOFT_GLOW_STYLE:
+			return BitmapFilter.changeStyle(originBitmap, BitmapFilter.SOFT_GLOW_STYLE, 0.6);
+			
+		case BitmapFilter.LIGHT_STYLE:
+			int width = originBitmap.getWidth();
+			int height = originBitmap.getHeight();
+			return BitmapFilter.changeStyle(originBitmap, BitmapFilter.LIGHT_STYLE, width / 3, height / 2, width / 2);
+			
+		case BitmapFilter.LOMO_STYLE:
+			return BitmapFilter.changeStyle(originBitmap, BitmapFilter.LOMO_STYLE, 
+					(originBitmap.getWidth() / 2.0) * 95 / 100.0);
+			
+		case BitmapFilter.NEON_STYLE:
+			return BitmapFilter.changeStyle(originBitmap, BitmapFilter.NEON_STYLE, 200, 100, 50);
+			
+		case BitmapFilter.PIXELATE_STYLE:
+			return BitmapFilter.changeStyle(originBitmap, BitmapFilter.PIXELATE_STYLE, 10);
+			
+		case BitmapFilter.MOTION_BLUR_STYLE:
+			return BitmapFilter.changeStyle(originBitmap, BitmapFilter.MOTION_BLUR_STYLE, 10, 1);
+			
+		case BitmapFilter.OIL_STYLE:
+			return BitmapFilter.changeStyle(originBitmap, BitmapFilter.OIL_STYLE, 5);
+			
+		case BitmapFilter.ELD_STYLE:
+			return BitmapFilter.changeStyle(originBitmap, BitmapFilter.ELD_STYLE);
+			
+		default:
+			return BitmapFilter.changeStyle(originBitmap, styleNo);
+		}
+	}
+	
 	/** Removes the filter/effect from the preview picture.
-	 * It sets the image view's bitmap to 'image' (the original picture taken).
+	 * It sets the originalImage view's bitmap to 'originalImage' (the original picture taken).
 	 * 
 	 * @param view
 	 */
 	public void undoFilter(View view){
 		
-		//sets the 'currentImage' to the original one ('image')
+		//sets the 'currentImage' to the original one ('originalImage')
 		currentImage = previewImage.copy(previewImage.getConfig(), true);
-		//storeImage = image.copy(image.getConfig(), true);
+		//storeImage = originalImage.copy(originalImage.getConfig(), true);
 		
-		//sets the image view's image picture to the original one
+		//sets the originalImage view's originalImage picture to the original one
 		ImageView imageView = (ImageView) findViewById(R.id.imageView1);
 		imageView.setImageBitmap(currentImage);
 		
@@ -422,7 +513,7 @@ public class DealWithPictureActivity extends Activity {
 		filterImages.clear();
 	}
 	
-	/** Removes the current image by setting it to null.
+	/** Removes the current originalImage by setting it to null.
 	 * 
 	 */
 	public static void removeCurrentImage(){
@@ -430,7 +521,7 @@ public class DealWithPictureActivity extends Activity {
 	}
 	
 	private void clearImages(){
-		image = null;
+		originalImage = null;
 		currentImage = null;
 		previewImage = null;
 		storeImage = null;
@@ -465,7 +556,7 @@ public class DealWithPictureActivity extends Activity {
 	}
 	
 	// Saving picture
-	private void storeImage(Context context, Bitmap image) {
+	private void storeImage(Context context, Bitmap originalImage) {
 		File pictureFile = getOutputMediaFile(this.context, 1);
 		File thumbnailFile = getOutputMediaFile(this.context, 2);
 	    if (pictureFile == null) {
@@ -476,8 +567,8 @@ public class DealWithPictureActivity extends Activity {
 	    try {
 	    	FileOutputStream fos1 = new FileOutputStream(pictureFile);
 	    	FileOutputStream fos2 = new FileOutputStream(thumbnailFile);
-	        image.compress(Bitmap.CompressFormat.PNG, 0, fos1);
-	        Bitmap aux = ThumbnailUtils.extractThumbnail(image, 80, 80);
+	        originalImage.compress(Bitmap.CompressFormat.PNG, 0, fos1);
+	        Bitmap aux = ThumbnailUtils.extractThumbnail(originalImage, 80, 80);
 	        fos1.close();
 	        aux.compress(Bitmap.CompressFormat.PNG, 0, fos2);
 	        fos2.close();
@@ -493,8 +584,8 @@ public class DealWithPictureActivity extends Activity {
 	    }
 	}
 	
-	private void applyFilter(View v) throws Exception{
-		//gets the image view with the current image
+	/*private void applyFilter(View v) throws Exception{
+		//gets the originalImage view with the current originalImage
 		ImageView imageView = (ImageView) findViewById(R.id.imageView1);
 		//gets the name of the clicked filter/effect thumbnail
 		LinearLayout layout = (LinearLayout) v;
@@ -510,20 +601,20 @@ public class DealWithPictureActivity extends Activity {
 				break;
 			}
 		}
-		//applies the filter/effect to the original image and makes it the current one	
+		//applies the filter/effect to the original originalImage and makes it the current one	
 		currentImage = effectsFactory.getEffect(id).applyEffect(previewImage);
 
-		if(image.getHeight() > 2048){
-			storeImage = Bitmap.createScaledBitmap(image, (image.getWidth()*2048)/image.getHeight(), 2048, false);
+		if(originalImage.getHeight() > 2048){
+			storeImage = Bitmap.createScaledBitmap(originalImage, (originalImage.getWidth()*2048)/originalImage.getHeight(), 2048, false);
 		}			
-		else if(image.getWidth() > 2048){
-			storeImage = Bitmap.createScaledBitmap(image, 2048, (image.getHeight()*2048/image.getWidth()), false);
+		else if(originalImage.getWidth() > 2048){
+			storeImage = Bitmap.createScaledBitmap(originalImage, 2048, (originalImage.getHeight()*2048/originalImage.getWidth()), false);
 		}
 		
-		storeImage = effectsFactory.getEffect(id).applyEffect(image);
+		storeImage = effectsFactory.getEffect(id).applyEffect(originalImage);
 		
 
-		//displays the new image with the filter/effect applied
+		//displays the new originalImage with the filter/effect applied
 		imageView.setImageBitmap(currentImage);
 
 		//makes the undo button visible
@@ -532,7 +623,7 @@ public class DealWithPictureActivity extends Activity {
 		
 		//signalizes that an effect/filter was applied
 		isThereEffectApplied = true;
-	}
+	}*/
 	
 	
 	@Override

@@ -23,6 +23,7 @@ import android.os.Environment;
  *
  */
 public class EffectsFactory {
+	
 
 	private Context context; //the application context, used to get access to the application's cache directory
 	private Class<?> effectClass; //the effect class that will be dynamically loaded
@@ -104,7 +105,7 @@ public class EffectsFactory {
 		
 		//only proceeds if both class and object are different from null
 		if(effectClass != null && effectObj != null){
-			
+			String classe = effectClass.getName();
 			try{
 				//gets the desired method, 'applyEffect'
 				Method applyEffectMethod = effectClass.getMethod("applyEffect", new Class[]{Bitmap.class});
@@ -129,7 +130,7 @@ public class EffectsFactory {
 			catch(InvocationTargetException ex){
 				
 				ex.printStackTrace();
-				throw new Exception("Couldn't apply method to such object!", ex);
+				throw new Exception("Couldn't apply method to such object!\n" + classe, ex);
 			}
 		}
 		

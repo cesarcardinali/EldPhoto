@@ -30,4 +30,10 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>Lib</name>
+			<value>file:/C:/Users/cesar.cardinali/Documents/Eld/EldPhoto/android-image-filter-master/android-image-filter-master</value>
+		</variable>
+	</variableList>
 </projectDescription>
